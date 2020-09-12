@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:minimalist/presentation/theme.dart';
+import 'package:minimalist/presentation/themer.dart';
 import 'package:minimalist/screens/home_screen.dart';
 import 'package:minimalist/screens/splash_screen.dart';
 import 'package:minimalist/state/app/app_middleware.dart';
@@ -74,7 +74,7 @@ class Main extends StatelessWidget {
         title: 'Burntoast',
         debugShowCheckedModeBanner: false,
         color: Color(0xFFF2993E),
-        theme: Burnt.getTheme(context),
+        theme: Themer().getTheme(context),
         initialRoute: MainRoutes.splash,
         routes: <String, WidgetBuilder>{
           MainRoutes.splash: (context) => SplashScreen(),

@@ -1,5 +1,5 @@
-import 'package:minimalist/state/app/error/error_actions.dart';
-import 'package:minimalist/state/app/error/error_state.dart';
+import 'package:minimalist/state/error/error_actions.dart';
+import 'package:minimalist/state/error/error_state.dart';
 import 'package:redux/redux.dart';
 
 Reducer<ErrorState> errorReducer = combineReducers([

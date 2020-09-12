@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:minimalist/components/common/components.dart';
-import 'package:minimalist/presentation/theme.dart';
+import 'package:minimalist/presentation/themer.dart';
 
 class PrivacyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var child = Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
       Container(width: 50.0, height: 60.0),
-      BackArrow(color: Burnt.lightGrey),
+      BackArrow(color: Themer().lightGrey()),
       Container(height: 20.0),
       _text('Privacy Policy'),
       _text(

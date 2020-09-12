@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/components/dialog/dialog.dart';
 import 'package:minimalist/model/todo_item.dart';
-import 'package:minimalist/presentation/theme.dart';
+import 'package:minimalist/presentation/themer.dart';
 import 'package:minimalist/state/app/app_state.dart';
-import 'package:minimalist/state/me/todo_actions.dart';
+import 'file:///E:/Magic/minimalist/lib/state/me/todos/todo_actions.dart';
 import 'package:redux/redux.dart';
 
 class AddTodoDialog extends StatelessWidget {
@@ -79,9 +79,9 @@ class _PresenterState extends State<_Presenter> {
         onChanged: (text) => setState(() => _title = text),
         decoration: InputDecoration(
           hintText: 'Description',
-          hintStyle: TextStyle(color: Burnt.hintTextColor),
-          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Burnt.lightGrey)),
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Burnt.primaryLight, width: 1.0)),
+          hintStyle: TextStyle(color: Themer().hintTextColor()),
+          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Themer().lightGrey())),
+          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Themer().primaryLight(), width: 1.0)),
         ),
       ),
     );
@@ -98,9 +98,9 @@ class _PresenterState extends State<_Presenter> {
         onChanged: (text) => setState(() => _desc = text),
         decoration: InputDecoration(
           hintText: 'Description',
-          hintStyle: TextStyle(color: Burnt.hintTextColor),
-          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Burnt.lightGrey)),
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Burnt.primaryLight, width: 1.0)),
+          hintStyle: TextStyle(color: Themer().hintTextColor()),
+          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Themer().lightGrey())),
+          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Themer().primaryLight(), width: 1.0)),
         ),
       ),
     );
@@ -140,7 +140,7 @@ class Confirm extends StatelessWidget {
       children: <Widget>[
         Container(height: 10.0),
         Column(children: <Widget>[
-          Text(title, style: TextStyle(fontSize: 18.0, fontWeight: Burnt.fontBold)),
+          Text(title, style: TextStyle(fontSize: 18.0, fontWeight: Themer().fontBold())),
           if (description != null) _description(),
         ]),
         Container(height: 10.0),
@@ -169,7 +169,7 @@ class Confirm extends StatelessWidget {
       DialogOption(
           display: action,
           onTap: onTap,
-          style: TextStyle(color: Burnt.anchorColor, fontSize: 16.0, fontWeight: Burnt.fontBold)),
+          style: TextStyle(color: Themer().anchorColor(), fontSize: 16.0, fontWeight: Themer().fontBold())),
       DialogOption(
           display: 'Cancel',
           onTap: () => Navigator.of(context, rootNavigator: true).pop(true),

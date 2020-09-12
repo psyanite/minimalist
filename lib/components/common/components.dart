@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:minimalist/presentation/crust_cons_icons.dart';
-import 'package:minimalist/presentation/theme.dart';
+import 'package:minimalist/presentation/themer.dart';
 
 class SolidBackButton extends StatelessWidget {
   final Color color;
@@ -12,12 +12,14 @@ class SolidBackButton extends StatelessWidget {
 
   SolidBackButton({
     Key key,
-    this.color = Burnt.primary,
+    this.color,
     this.textColor = Colors.white,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final color = this.color ?? Themer().primary();
+    final textColor = this.textColor ?? Themer().white();
     return InkWell(
       onTap: () => Navigator.of(context).pop(),
       child: Container(
@@ -36,7 +38,7 @@ class SolidBackButton extends StatelessWidget {
 class WhiteBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SolidBackButton(color: Colors.white, textColor: Burnt.primary);
+    return SolidBackButton(color: Colors.white, textColor: Themer().primary());
   }
 }
 
@@ -45,11 +47,12 @@ class BackArrow extends StatelessWidget {
 
   BackArrow({
     Key key,
-    this.color = Burnt.textBodyColor,
+    this.color,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final color = this.color ?? Themer().textBodyColor();
     return IconButton(
       icon: Icon(CrustCons.back, color: color, size: 30.0),
       onPressed: () => Navigator.of(context).pop(),
@@ -69,12 +72,13 @@ class SmallButton extends StatelessWidget {
     this.child,
     this.onTap,
     this.padding,
-    this.gradient = Burnt.buttonGradient,
+    this.gradient,
     this.color,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final gradient = this.gradient ?? Themer().buttonGradient();
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -107,7 +111,7 @@ class WhiteButton extends StatelessWidget {
     return Material(
       color: Colors.white,
       child: InkWell(
-        splashColor: Burnt.primaryLight,
+        splashColor: Themer().splashOrange(),
         onTap: onPressed,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 12.0),
@@ -130,7 +134,7 @@ class WhiteButton extends StatelessWidget {
 
   Widget _content() {
     if (child != null) return child;
-    return Text(text, style: TextStyle(fontSize: 20.0, color: Burnt.primary));
+    return Text(text, style: TextStyle(fontSize: 20.0, color: Themer().primary()));
   }
 }
 
@@ -152,7 +156,7 @@ class BottomButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 20.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(2.0)),
-          gradient: Burnt.buttonGradient,
+          gradient: Themer().buttonGradient(),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.max,
@@ -272,7 +276,7 @@ class HollowButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      splashColor: splashColor ?? Burnt.splashOrange,
+      splashColor: splashColor ?? Themer().splashOrange(),
       highlightColor: Colors.transparent,
       onTap: onTap,
       child: Container(
@@ -423,7 +427,7 @@ class NetworkImg extends StatelessWidget {
         height: height,
         padding: padding,
         margin: margin,
-        color: Burnt.imgPlaceholderColor,
+        color: Themer().imgPlaceholderColor(),
       );
     }
     return Container(
@@ -432,7 +436,7 @@ class NetworkImg extends StatelessWidget {
       padding: padding,
       margin: margin,
       decoration: BoxDecoration(
-        color: Burnt.imgPlaceholderColor,
+        color: Themer().imgPlaceholderColor(),
         image: DecorationImage(image: CachedNetworkImageProvider(url), fit: BoxFit.cover),
       ),
     );
@@ -454,7 +458,7 @@ buttonSnack(BuildContext context, String text, String buttonText, Function onTap
               padding: EdgeInsets.only(left: 8.0, top: 2.0, bottom: 2.0),
               child: Text(
                 buttonText,
-                style: TextStyle(color: Colors.white, fontSize: 17.0, fontWeight: Burnt.fontBold),
+                style: TextStyle(color: Colors.white, fontSize: 17.0, fontWeight: Themer().fontBold()),
               ),
             ),
           )

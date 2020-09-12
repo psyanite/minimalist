@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/main.dart';
-import 'package:minimalist/presentation/theme.dart';
+import 'package:minimalist/presentation/themer.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:redux/redux.dart';
 
@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget _presenter() {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(gradient: Burnt.burntGradient),
+        decoration: BoxDecoration(gradient: Themer().burntGradient()),
         child: Center(
           child: Image.asset('assets/images/loading-icon.png', height: 200.0),
         ),

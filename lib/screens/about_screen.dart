@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:minimalist/components/common/banners.dart';
 import 'package:minimalist/components/common/components.dart';
-import 'package:minimalist/presentation/theme.dart';
+import 'package:minimalist/presentation/themer.dart';
 import 'package:minimalist/screens/privacy_screen.dart';
 import 'package:minimalist/screens/terms_screen.dart';
 import 'package:minimalist/utils/general_utils.dart';
@@ -44,7 +44,7 @@ class AboutScreen extends StatelessWidget {
   Widget _options(BuildContext context) {
     return SliverFillRemaining(
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-        Container(padding: EdgeInsets.only(top: 25.0, left: 15.0, bottom: 10.0), child: Text('ABOUT', style: Burnt.appBarTitleStyle)),
+        Container(padding: EdgeInsets.only(top: 25.0, left: 15.0, bottom: 10.0), child: Text('ABOUT', style: Themer().appBarTitleStyle())),
         ListTile(
           title: Text('Contact Us', style: TextStyle(fontSize: 18.0)),
           onTap: () => launch(Utils.buildEmail('', '(insert-your-query-here)')),

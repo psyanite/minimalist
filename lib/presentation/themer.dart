@@ -2,93 +2,99 @@ import 'package:flutter/material.dart';
 
 class Themer {
   static final Themer _singleton = Themer._internal();
+
   static ThemeChoice _chosenTheme = ThemeChoice.blue;
   static Color _mainColor = Colors.blue;
 
+  static FontChoice _chosenFont = FontChoice.ptSans;
+  static String _mainFont = 'ptsans';
+
   Themer._internal();
 
+
+  // Setup
+
+  init(ThemeChoice theme, FontChoice font) {
+    _chosenTheme = theme;
+    _chosenFont = font;
+    _refresh();
+  }
+
+  setChosenTheme(ThemeChoice theme) {
+    _chosenTheme = theme;
+    _refresh();
+  }
+
+  setChosenFont(FontChoice font) {
+    _chosenFont = font;
+    _refresh();
+  }
+
+
   /// Colors
+  Color _white = Colors.white;
+  white() => Color(0xFFFFFF);
 
   Color _materialPrimary = Colors.blue;
-
   materialPrimary() => _mainColor;
 
   static const _defaultPrimary = Colors.blue;
   Color _primary = _defaultPrimary;
-
   primary() => _primary;
 
   Color _primaryLight = Color(0xFF42A5F5);
-
   primaryLight() => _primaryLight;
 
   Color _primaryExtraLight = Color(0xFFBBDEFB);
-
   primaryExtraLight() => _primaryExtraLight;
 
   static const _defaultTextBodyColor = Color(0xDD604B41);
   Color _textBodyColor = _defaultTextBodyColor;
-
   textBodyColor() => _textBodyColor;
 
   Color _anchorColor = Color(0xFF51A4FF);
-
   anchorColor() => _anchorColor;
 
   Color _hintTextColor = Color(0xBB604B41);
-
   hintTextColor() => _hintTextColor;
 
   Color _lightTextColor = Color(0x82604B41);
-
   lightTextColor() => _lightTextColor;
 
   Color _primaryTextColor = Color(0xFF42A5F5);
-
   primaryTextColor() => _primaryTextColor;
 
   Color _paper = Color(0xFFFAFAFA);
-
   paper() => _paper;
 
   Color _separator = Color(0xFFEEEEEE);
-
   separator() => _separator;
 
   Color _separatorBlue = Color(0x16007AFF);
-
   separatorBlue() => _separatorBlue;
 
   Color _lightGrey = Color(0x44604B41);
-
   lightGrey() => _lightGrey;
 
   Color _iconGrey = Color(0x44604B41);
-
   iconGrey() => _iconGrey;
 
   Color _iconOrange = Color(0xFFBBDEFB);
-
   iconOrange() => _iconOrange;
 
   Color _splashOrange = Color(0xFFE3F2FD);
-
   splashOrange() => _splashOrange;
 
   Color _imgPlaceholderColor = Color(0x08604B41);
-
   imgPlaceholderColor() => _imgPlaceholderColor;
 
   Color _lightBlue = Color(0x6C007AFF);
-
   lightBlue() => _lightBlue;
 
   Color _blue = Color(0xFF007AFF);
-
   blue() => _blue;
 
   Color _darkBlue = Color(0xFF4A83C4);
-
   darkBlue() => _darkBlue;
 
   /// Fonts
@@ -96,23 +102,25 @@ class Themer {
   static const _defaultFontFancy = 'GrandHotel';
 
   String _fontBase = _defaultFontBase;
-
   fontBase() => _fontBase;
 
   String _fontFancy = _defaultFontFancy;
-
   fontFancy() => _fontFancy;
 
   static const _defaultFontLight = FontWeight.w100;
   FontWeight _fontLight = _defaultFontLight;
+  fontLight() => _fontLight;
 
   static const _defaultFontLean = FontWeight.w400;
   FontWeight _fontLean = _defaultFontLean;
+  fontLean() => _fontLean;
 
   static const _defaultFontBold = FontWeight.w600;
   FontWeight _fontBold = _defaultFontBold;
+  fontBold() => _fontBold;
 
   FontWeight _fontExtraBold = FontWeight.w800;
+  fontExtraBold() => _fontExtraBold;
 
   TextStyle _display4 = TextStyle(fontSize: 28.0);
 
@@ -125,22 +133,26 @@ class Themer {
       fontFamily: _defaultFontBase,
       fontWeight: _defaultFontLight,
       letterSpacing: 3.0);
+  appBarTitleStyle() => _appBarTitleStyle;
 
-  static var titleStyle = TextStyle(fontSize: 20.0, fontWeight: _defaultFontBold);
+  TextStyle _titleStyle = TextStyle(fontSize: 20.0, fontWeight: _defaultFontBold);
 
   /// Gradients
-  static const burntGradient = LinearGradient(
+  static const _burntGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     stops: [0, 0.5, 1.0],
     colors: [Color(0xFFFFC86B), Color(0xFFFFAB40), Color(0xFFC45D35)],
   );
-  static const buttonGradient = LinearGradient(
+  burntGradient() => _burntGradient;
+
+  static const _buttonGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     stops: [0, 0.3],
     colors: [Color(0xFFFFC86B), Color(0xFFFFB655)],
   );
+  buttonGradient() => _buttonGradient;
 
   ThemeData getTheme(BuildContext context) {
     return ThemeData(
@@ -156,9 +168,14 @@ class Themer {
     );
   }
 
-  _setColors(ThemeChoice theme) {
+  _refresh() {
+    _updateColors();
+    _updateTextStyles();
+  }
+
+  _updateColors() {
     var mainColor;
-    switch (theme) {
+    switch (_chosenTheme) {
       case ThemeChoice.cyan: { mainColor = Colors.cyan; } break;
       case ThemeChoice.indigo: { mainColor = Colors.indigo; } break;
       case ThemeChoice.blue: { mainColor = Colors.blue; } break;
@@ -166,20 +183,93 @@ class Themer {
       case ThemeChoice.grey: { mainColor = Colors.grey; } break;
       default: { mainColor = Colors.blue; } break;
     }
+
+    _materialPrimary = mainColor;
+    _primary = mainColor;
+
+    Color _primaryLight = Color(0xFF42A5F5);
+    primaryLight() => _primaryLight;
+
+    Color _primaryExtraLight = Color(0xFFBBDEFB);
+    primaryExtraLight() => _primaryExtraLight;
+
+    const _defaultTextBodyColor = Color(0xDD604B41);
+    Color _textBodyColor = _defaultTextBodyColor;
+    textBodyColor() => _textBodyColor;
+
+    Color _anchorColor = Color(0xFF51A4FF);
+    anchorColor() => _anchorColor;
+
+    Color _hintTextColor = Color(0xBB604B41);
+    hintTextColor() => _hintTextColor;
+
+    Color _lightTextColor = Color(0x82604B41);
+    lightTextColor() => _lightTextColor;
+
+    Color _primaryTextColor = Color(0xFF42A5F5);
+    primaryTextColor() => _primaryTextColor;
+
+    Color _paper = Color(0xFFFAFAFA);
+    paper() => _paper;
+
+    Color _separator = Color(0xFFEEEEEE);
+    separator() => _separator;
+
+    Color _separatorBlue = Color(0x16007AFF);
+    separatorBlue() => _separatorBlue;
+
+    Color _lightGrey = Color(0x44604B41);
+    lightGrey() => _lightGrey;
+
+    Color _iconGrey = Color(0x44604B41);
+    iconGrey() => _iconGrey;
+
+    Color _iconOrange = Color(0xFFBBDEFB);
+    iconOrange() => _iconOrange;
+
+    Color _splashOrange = Color(0xFFE3F2FD);
+    splashOrange() => _splashOrange;
+
+    Color _imgPlaceholderColor = Color(0x08604B41);
+    imgPlaceholderColor() => _imgPlaceholderColor;
+
+    Color _lightBlue = Color(0x6C007AFF);
+    lightBlue() => _lightBlue;
+
+    Color _blue = Color(0xFF007AFF);
+    blue() => _blue;
+
+    Color _darkBlue = Color(0xFF4A83C4);
+    darkBlue() => _darkBlue;
   }
 
-  factory Themer({ThemeChoice theme, FontChoice font}) {
-    if (theme != null) {
-      _chosenTheme = theme;
-      _setColors(theme);
+  _updateTextStyles() {
+    switch (_chosenFont) {
+      case FontChoice.ptSans: { _mainFont = 'PTSans'; } break;
+      case FontChoice.productSans: { _mainFont = 'ProductSans'; } break;
+      default: { _mainFont = 'PTSans'; } break;
     }
 
-    if (font != null) _chosenFont = font;
+    _fontBase = _mainFont;
 
+    _bodyStyle = TextStyle(color: textBodyColor(), fontSize: 14.0, fontFamily: _fontBase, fontWeight: _fontLight);
+
+    _appBarTitleStyle = TextStyle(
+        color: _primary,
+        fontSize: 22.0,
+        fontFamily: _fontBase,
+        fontWeight: _fontLight,
+        letterSpacing: 3.0);
+
+    _titleStyle = TextStyle(fontSize: 20.0, fontWeight: _fontBold);
+
+  }
+
+  factory Themer() {
     return _singleton;
   }
 }
 
 enum ThemeChoice { cyan, indigo, blue, blueGrey, grey }
 
-enum FontChoice { ptsans }
+enum FontChoice { ptSans, productSans }

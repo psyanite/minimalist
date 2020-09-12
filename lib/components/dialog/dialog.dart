@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:minimalist/presentation/theme.dart';
+import 'package:minimalist/presentation/themer.dart';
 
 class DialogOption {
   final IconData icon;
@@ -32,7 +32,7 @@ class BurntDialog extends StatelessWidget {
 
   Widget _leading(BuildContext context) {
     var children = <Widget>[
-      if (title != null) Text(title, style: TextStyle(fontSize: 18.0, fontWeight: Burnt.fontBold)),
+      if (title != null) Text(title, style: TextStyle(fontSize: 18.0, fontWeight: Themer().fontBold())),
       if (title != null && description != null) Container(height: 5.0),
       if (description != null)
         Container(
@@ -62,7 +62,7 @@ class DialogOptions extends StatelessWidget {
     return ListView.separated(
       shrinkWrap: true,
       itemBuilder: (context, index) => _option(options[index]),
-      separatorBuilder: (context, index) => Divider(color: Burnt.separatorBlue),
+      separatorBuilder: (context, index) => Divider(color: Themer().separatorBlue()),
       itemCount: options.length,
     );
   }
@@ -113,7 +113,7 @@ class TermsDialog extends StatelessWidget {
     return ListView.separated(
         shrinkWrap: true,
         itemBuilder: (context, index) => _option(options[index]),
-        separatorBuilder: (context, index) => Divider(color: Burnt.separatorBlue),
+        separatorBuilder: (context, index) => Divider(color: Themer().separatorBlue()),
         itemCount: options.length);
   }
 

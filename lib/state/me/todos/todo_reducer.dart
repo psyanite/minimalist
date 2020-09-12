@@ -1,13 +1,13 @@
 import 'package:minimalist/model/todo_item.dart';
-import 'package:minimalist/state/me/todo_actions.dart';
-import 'package:minimalist/state/me/todo_state.dart';
+import 'file:///E:/Magic/minimalist/lib/state/me/todos/todo_actions.dart';
+import 'file:///E:/Magic/minimalist/lib/state/me/todos/todo_state.dart';
 import 'package:redux/redux.dart';
 
 Reducer<TodoState> todoReducer = combineReducers([
   new TypedReducer<TodoState, AddTodoItem>(addTodoItem),
 ]);
 
-TodoState addTodoItem(state, AddTodoItem action) {
+TodoState addTodoItem(TodoState state, AddTodoItem action) {
   List<TodoItem> items = state.items;
 //  var item = action.item;
 //  if (item.type == SearchHistoryItemType.cuisine) {

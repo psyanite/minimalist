@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:minimalist/components/dialog/dialog.dart';
-import 'package:minimalist/presentation/theme.dart';
+import 'package:minimalist/presentation/themer.dart';
 
 class Confirm extends StatelessWidget {
   final String title;
@@ -18,7 +18,7 @@ class Confirm extends StatelessWidget {
       children: <Widget>[
         Container(height: 10.0),
         Column(children: <Widget>[
-          Text(title, style: TextStyle(fontSize: 18.0, fontWeight: Burnt.fontBold)),
+          Text(title, style: TextStyle(fontSize: 18.0, fontWeight: Themer().fontBold())),
           if (description != null) _description(),
         ]),
         Container(height: 10.0),
@@ -44,7 +44,7 @@ class Confirm extends StatelessWidget {
 
   Widget _options(context) {
     var options = <DialogOption>[
-      DialogOption(display: action, onTap: onTap, style: TextStyle(color: Burnt.anchorColor, fontSize: 16.0, fontWeight: Burnt.fontBold)),
+      DialogOption(display: action, onTap: onTap, style: TextStyle(color: Themer().anchorColor(), fontSize: 16.0, fontWeight: Themer().fontBold())),
       DialogOption(display: 'Cancel', onTap: () => Navigator.of(context, rootNavigator: true).pop(true), style: TextStyle(fontSize: 16.0)),
     ];
     return Column(
