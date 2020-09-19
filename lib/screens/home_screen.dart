@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/components/common/ring_button.dart';
 import 'package:minimalist/components/dialog/add_todo_dialog.dart';
 import 'package:minimalist/model/todo_item.dart';
+import 'package:minimalist/presentation/themer.dart';
 import 'package:minimalist/screens/about_screen.dart';
 import 'package:minimalist/screens/settings_screen.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:redux/redux.dart';
-
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -33,32 +34,57 @@ class _Presenter extends StatefulWidget {
 }
 
 class _PresenterState extends State<_Presenter> {
-  @override
-  initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       endDrawer: _drawer(context),
-      body: CustomScrollView(slivers: <Widget>[]),
+      body: SafeArea(child: CustomScrollView(slivers: _todos())),
       floatingActionButton: _addButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
   Widget _addButton() {
-    return FloatingActionButton(
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AddTodoDialog();
-          },
-        );
-      },
-      child: Icon(Icons.add),
-      backgroundColor: Colors.grey[30],
+    return Container(
+      margin: EdgeInsets.only(bottom: 35.0),
+      child: RingButton(
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) {
+              return AddTodoDialog();
+            },
+          );
+        }
+      ),
+    );
+  }
+
+  List<Widget> _todos() {
+    return List<Widget>.from(widget.todos.map((todo) => _todo(todo)));
+  }
+
+  Widget _todo(TodoItem todo) {
+    return SliverToBoxAdapter(
+      child: InkWell(
+        onTap: () => _showBottomSheet(todo),
+        child: Container(child: Text(todo.title)),
+      ),
+    );
+  }
+
+  _showBottomSheet(TodoItem todo) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) => _todoBottomSheet(todo, context),
+    );
+  }
+
+  Widget _todoBottomSheet(TodoItem todo, BuildContext context) {
+    return Container(
+      child: Text(todo.title),
     );
   }
 
@@ -85,9 +111,7 @@ class _PresenterState extends State<_Presenter> {
       ),
     );
   }
-
 }
-
 
 class _Props {
   final List<TodoItem> todoItems;

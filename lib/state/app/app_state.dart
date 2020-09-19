@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import 'file:///E:/Magic/minimalist/lib/state/me/todos/todo_state.dart';
+import 'package:minimalist/state/me/todos/todo_state.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
 
 @immutable

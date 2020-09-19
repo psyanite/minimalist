@@ -161,7 +161,7 @@ class _SettingControl extends StatelessWidget {
 
   Widget _option(BuildContext context, _SettingOption option) {
     return InkWell(
-      splashColor: Themer().splashOrange(),
+      splashColor: Themer().splashPrimary(),
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8.0),
         height: 40.0,

@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/components/common/components.dart';
+import 'package:minimalist/components/common/ring_button.dart';
 import 'package:minimalist/components/dialog/dialog.dart';
 import 'package:minimalist/model/todo_item.dart';
 import 'package:minimalist/presentation/themer.dart';
 import 'package:minimalist/state/app/app_state.dart';
-import 'file:///E:/Magic/minimalist/lib/state/me/todos/todo_actions.dart';
+import 'package:minimalist/state/me/todos/todo_actions.dart';
 import 'package:redux/redux.dart';
 
 class AddTodoDialog extends StatelessWidget {
@@ -38,6 +40,7 @@ class _Presenter extends StatefulWidget {
 class _PresenterState extends State<_Presenter> {
   String _title;
   String _desc;
+  bool _showDesc = false;
 
   @override
   initState() {
@@ -46,42 +49,47 @@ class _PresenterState extends State<_Presenter> {
 
   @override
   Widget build(BuildContext context) {
-    var content = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Container(height: 10.0),
-        Column(children: <Widget>[
-          _titleField(),
-          _descField(),
-        ]),
-        Container(height: 10.0),
-        _okButton(context),
-      ],
-    );
-
-    return AlertDialog(
-      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-      content: Container(
-        width: 100,
-        child: content,
-      ),
-    );
+    return
+      AnimatedPadding(
+        padding: MediaQuery.of(context).viewInsets,
+        duration: Duration(milliseconds: 100),
+        curve: Curves.ease,
+        child: Container(
+          padding: EdgeInsets.only(top: 20.0, bottom: 30.0),
+          width: 100.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.0),
+                child: Column(children: <Widget>[
+                  _titleField(),
+                  if (_showDesc) _descField(),
+                ]),
+              ),
+              Container(height: 10.0),
+              buttons(),
+            ],
+          ),
+        ),
+      );
   }
 
   Widget _titleField() {
     return Container(
       width: 300.0,
-      padding: EdgeInsets.only(bottom: 30.0),
       child: TextField(
+        style: TextStyle(fontSize: 18.0),
+        autofocus: true,
         maxLines: null,
-        textAlign: TextAlign.center,
         keyboardType: TextInputType.multiline,
         onChanged: (text) => setState(() => _title = text),
         decoration: InputDecoration(
-          hintText: 'Description',
+          hintText: 'New task',
           hintStyle: TextStyle(color: Themer().hintTextColor()),
-          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Themer().lightGrey())),
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Themer().primaryLight(), width: 1.0)),
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
         ),
       ),
     );
@@ -90,39 +98,60 @@ class _PresenterState extends State<_Presenter> {
   Widget _descField() {
     return Container(
       width: 300.0,
-      padding: EdgeInsets.only(bottom: 30.0),
       child: TextField(
+        style: TextStyle(fontSize: 18.0),
         maxLines: null,
-        textAlign: TextAlign.center,
         keyboardType: TextInputType.multiline,
         onChanged: (text) => setState(() => _desc = text),
         decoration: InputDecoration(
-          hintText: 'Description',
+          hintText: 'Add details',
           hintStyle: TextStyle(color: Themer().hintTextColor()),
-          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Themer().lightGrey())),
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Themer().primaryLight(), width: 1.0)),
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
         ),
       ),
     );
   }
 
-  Widget _okButton(context) {
+  Widget okButton() {
     return InkWell(
-      onTap: submit,
-      child: Container(
-        foregroundDecoration: BoxDecoration(
-          color: Colors.grey[100],
-          shape: BoxShape.circle,
-        ),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: () => submit(context),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+        child: Text('Save', style: TextStyle(fontWeight: Themer().fontBold(), color: Themer().primaryTextColor())),
       ),
     );
   }
 
-  void submit() {
+  Widget showDescButton() {
+    return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: () => setState(() => _showDesc = !_showDesc),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+        child: Text('Add details', style: TextStyle(color: Themer().anchorColor())),
+      ),
+    );
+  }
+
+  Widget buttons() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        _showDesc ? Container() : showDescButton(),
+        okButton(),
+      ]),
+    );
+  }
+
+  void submit(BuildContext context) {
     var todoItem = TodoItem(title: _title, desc: _desc);
     widget.addTodoItem(todoItem);
+    Navigator.of(context).pop();
   }
-
 }
 
 class Confirm extends StatelessWidget {

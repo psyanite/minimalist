@@ -82,8 +82,8 @@ class Themer {
   Color _iconOrange = Color(0xFFBBDEFB);
   iconOrange() => _iconOrange;
 
-  Color _splashOrange = Color(0xFFE3F2FD);
-  splashOrange() => _splashOrange;
+  Color _splashPrimary = Color(0xFFE3F2FD);
+  splashPrimary() => _splashPrimary;
 
   Color _imgPlaceholderColor = Color(0x08604B41);
   imgPlaceholderColor() => _imgPlaceholderColor;
@@ -96,6 +96,10 @@ class Themer {
 
   Color _darkBlue = Color(0xFF4A83C4);
   darkBlue() => _darkBlue;
+
+  Color _ringColor = Colors.grey[200];
+  ringColor() => _ringColor;
+
 
   /// Fonts
   static const _defaultFontBase = 'PTSans';
@@ -187,60 +191,7 @@ class Themer {
     _materialPrimary = mainColor;
     _primary = mainColor;
 
-    Color _primaryLight = Color(0xFF42A5F5);
-    primaryLight() => _primaryLight;
-
-    Color _primaryExtraLight = Color(0xFFBBDEFB);
-    primaryExtraLight() => _primaryExtraLight;
-
-    const _defaultTextBodyColor = Color(0xDD604B41);
-    Color _textBodyColor = _defaultTextBodyColor;
-    textBodyColor() => _textBodyColor;
-
-    Color _anchorColor = Color(0xFF51A4FF);
-    anchorColor() => _anchorColor;
-
-    Color _hintTextColor = Color(0xBB604B41);
-    hintTextColor() => _hintTextColor;
-
-    Color _lightTextColor = Color(0x82604B41);
-    lightTextColor() => _lightTextColor;
-
-    Color _primaryTextColor = Color(0xFF42A5F5);
-    primaryTextColor() => _primaryTextColor;
-
-    Color _paper = Color(0xFFFAFAFA);
-    paper() => _paper;
-
-    Color _separator = Color(0xFFEEEEEE);
-    separator() => _separator;
-
-    Color _separatorBlue = Color(0x16007AFF);
-    separatorBlue() => _separatorBlue;
-
-    Color _lightGrey = Color(0x44604B41);
-    lightGrey() => _lightGrey;
-
-    Color _iconGrey = Color(0x44604B41);
-    iconGrey() => _iconGrey;
-
-    Color _iconOrange = Color(0xFFBBDEFB);
-    iconOrange() => _iconOrange;
-
-    Color _splashOrange = Color(0xFFE3F2FD);
-    splashOrange() => _splashOrange;
-
-    Color _imgPlaceholderColor = Color(0x08604B41);
-    imgPlaceholderColor() => _imgPlaceholderColor;
-
-    Color _lightBlue = Color(0x6C007AFF);
-    lightBlue() => _lightBlue;
-
-    Color _blue = Color(0xFF007AFF);
-    blue() => _blue;
-
-    Color _darkBlue = Color(0xFF4A83C4);
-    darkBlue() => _darkBlue;
+    /// TODO: Add more colors
   }
 
   _updateTextStyles() {
@@ -262,7 +213,6 @@ class Themer {
         letterSpacing: 3.0);
 
     _titleStyle = TextStyle(fontSize: 20.0, fontWeight: _fontBold);
-
   }
 
   factory Themer() {

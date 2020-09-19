@@ -111,7 +111,7 @@ class WhiteButton extends StatelessWidget {
     return Material(
       color: Colors.white,
       child: InkWell(
-        splashColor: Themer().splashOrange(),
+        splashColor: Themer().splashPrimary(),
         onTap: onPressed,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 12.0),
@@ -276,7 +276,7 @@ class HollowButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      splashColor: splashColor ?? Themer().splashOrange(),
+      splashColor: splashColor ?? Themer().splashPrimary(),
       highlightColor: Colors.transparent,
       onTap: onTap,
       child: Container(
