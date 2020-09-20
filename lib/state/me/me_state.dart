@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-import 'package:minimalist/model/user.dart';
+import 'package:minimalist/models/user.dart';
 
 final defaultUser = User(id: 0, displayName: 'User');
 

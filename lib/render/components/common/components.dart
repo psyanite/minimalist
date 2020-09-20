@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:minimalist/presentation/crust_cons_icons.dart';
-import 'package:minimalist/presentation/themer.dart';
+import 'package:minimalist/render/presentation/crust_cons_icons.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 
 class SolidBackButton extends StatelessWidget {
   final Color color;

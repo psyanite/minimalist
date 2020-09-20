@@ -4,11 +4,11 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:minimalist/components/common/banners.dart';
-import 'package:minimalist/components/common/components.dart';
-import 'package:minimalist/presentation/themer.dart';
-import 'package:minimalist/screens/privacy_screen.dart';
-import 'package:minimalist/screens/terms_screen.dart';
+import 'package:minimalist/render/components/common/banners.dart';
+import 'package:minimalist/render/components/common/components.dart';
+import 'package:minimalist/render/presentation/themer.dart';
+import 'package:minimalist/render/screens/privacy_screen.dart';
+import 'package:minimalist/render/screens/terms_screen.dart';
 import 'package:minimalist/utils/general_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 

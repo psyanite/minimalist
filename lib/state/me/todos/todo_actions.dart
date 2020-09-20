@@ -1,4 +1,4 @@
-import 'package:minimalist/model/todo_item.dart';
+import 'package:minimalist/models/todo_item.dart';
 
 class AddTodo {
   final TodoItem todo;

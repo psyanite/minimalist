@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:minimalist/components/common/components.dart';
-import 'package:minimalist/presentation/themer.dart';
+import 'package:minimalist/render/components/common/components.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:minimalist/state/settings/settings_actions.dart';
 import 'package:minimalist/state/settings/settings_state.dart';

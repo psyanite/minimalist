@@ -1,4 +1,4 @@
-import 'package:minimalist/presentation/themer.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
 
 class SetThemeChoice {

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:minimalist/components/common/components.dart';
+import 'package:minimalist/render/components/common/components.dart';
 
 class BurntBanner extends StatelessWidget {
   final String image;

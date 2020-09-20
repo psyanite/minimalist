@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:minimalist/components/common/components.dart';
-import 'package:minimalist/presentation/themer.dart';
+import 'package:minimalist/render/components/common/components.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 
 class TermsScreen extends StatelessWidget {
   @override

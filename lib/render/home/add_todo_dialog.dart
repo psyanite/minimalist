@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:minimalist/components/common/components.dart';
-import 'package:minimalist/components/common/ring_button.dart';
-import 'package:minimalist/components/dialog/dialog.dart';
-import 'package:minimalist/model/todo_item.dart';
-import 'package:minimalist/presentation/themer.dart';
+import 'package:minimalist/render/components/dialog/dialog.dart';
+import 'package:minimalist/models/todo_item.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:minimalist/state/me/todos/todo_actions.dart';
 import 'package:redux/redux.dart';
@@ -86,7 +84,7 @@ class _PresenterState extends State<_Presenter> {
         keyboardType: TextInputType.multiline,
         onChanged: (text) => setState(() => _title = text),
         decoration: InputDecoration(
-          hintText: 'New task',
+          hintText: 'New todo',
           hintStyle: TextStyle(color: Themer().hintTextColor()),
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,

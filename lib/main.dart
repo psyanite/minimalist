@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:minimalist/presentation/themer.dart';
-import 'package:minimalist/screens/home_screen.dart';
-import 'package:minimalist/screens/splash_screen.dart';
+import 'package:minimalist/render/presentation/themer.dart';
+import 'package:minimalist/render/home/home_screen.dart';
+import 'package:minimalist/render/screens/splash_screen.dart';
 import 'package:minimalist/state/app/app_middleware.dart';
 import 'package:minimalist/state/app/app_reducer.dart';
 import 'package:minimalist/state/app/app_state.dart';

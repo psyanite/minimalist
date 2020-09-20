@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-import 'package:minimalist/model/todo_item.dart';
+import 'package:minimalist/models/todo_item.dart';
 
 @immutable
 class TodoState {

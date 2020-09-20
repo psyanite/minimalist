@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:minimalist/components/dialog/dialog.dart';
-import 'package:minimalist/presentation/themer.dart';
+import 'package:minimalist/render/components/dialog/dialog.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 
 class Confirm extends StatelessWidget {
   final String title;

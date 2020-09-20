@@ -1,12 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:minimalist/components/dialog/dialog.dart';
-import 'package:minimalist/model/todo_item.dart';
-import 'package:minimalist/presentation/themer.dart';
-import 'package:minimalist/state/app/app_state.dart';
-import 'package:minimalist/state/me/todos/todo_actions.dart';
-import 'package:redux/redux.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 
 class RingButton extends StatefulWidget {
   final Function onTap;

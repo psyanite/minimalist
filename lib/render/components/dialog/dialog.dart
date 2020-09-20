@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:minimalist/presentation/themer.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 
 class DialogOption {
   final IconData icon;
