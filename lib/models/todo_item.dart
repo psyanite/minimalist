@@ -11,6 +11,18 @@ class TodoItem {
     this.desc,
   });
 
+  TodoItem copyWith({
+    TodoStatus status,
+    String title,
+    String desc,
+  }) {
+    return TodoItem(
+      status: status ?? this.status,
+      title: title ?? this.title,
+      desc: desc ?? this.desc,
+    );
+  }
+
   @override
   String toString() {
     return '{ status: $status, title: $title, desc: $desc}';

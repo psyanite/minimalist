@@ -6,6 +6,7 @@ import 'todo_state.dart';
 Reducer<TodoState> todoReducer = combineReducers([
   new TypedReducer<TodoState, AddTodo>(addTodo),
   new TypedReducer<TodoState, ReorderTodo>(reorderTodo),
+  new TypedReducer<TodoState, UpdateTodo>(updateTodo),
 ]);
 
 TodoState addTodo(TodoState state, AddTodo action) {
@@ -14,4 +15,8 @@ TodoState addTodo(TodoState state, AddTodo action) {
 
 TodoState reorderTodo(TodoState state, ReorderTodo action) {
   return state.reorderTodo(action.oldIndex, action.newIndex);
+}
+
+TodoState updateTodo(TodoState state, UpdateTodo action) {
+  return state.updateTodo(action.index, action.todo);
 }

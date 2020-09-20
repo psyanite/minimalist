@@ -37,6 +37,12 @@ class TodoState {
     return copyWith(items: clone);
   }
 
+  TodoState updateTodo(int index, TodoItem todo) {
+    var clone = cloneTodoItems();
+    clone.replaceRange(index, index, [todo]);
+    return copyWith(items: clone);
+  }
+
   TodoState reorderTodo(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) newIndex -= 1;
     var clone = cloneTodoItems();

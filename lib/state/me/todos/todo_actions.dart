@@ -12,3 +12,10 @@ class ReorderTodo {
 
   ReorderTodo(this.oldIndex, this.newIndex);
 }
+
+class UpdateTodo {
+  final int index;
+  final TodoItem todo;
+
+  UpdateTodo(this.index, this.todo);
+}

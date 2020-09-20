@@ -87,6 +87,7 @@ class _PresenterState extends State<_Presenter> {
     return ReorderableListyView(
       children: List<Widget>.from(children),
       onReorder: (int oldIndex, int newIndex) {
+
         widget.dispatch(ReorderTodo(oldIndex, newIndex));
       },
     );
