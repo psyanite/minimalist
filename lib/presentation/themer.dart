@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minimalist/state/settings/settings_state.dart';
 
 class Themer {
   static final Themer _singleton = Themer._internal();
@@ -9,14 +10,17 @@ class Themer {
   static FontChoice _chosenFont = FontChoice.ptSans;
   static String _mainFont = 'ptsans';
 
+  static ContentAlign _chosenContentAlign = ContentAlign.center;
+
   Themer._internal();
 
 
   // Setup
 
-  init(ThemeChoice theme, FontChoice font) {
+  init(ThemeChoice theme, FontChoice font, ContentAlign contentAlign) {
     _chosenTheme = theme;
     _chosenFont = font;
+    _chosenContentAlign = contentAlign;
     _refresh();
   }
 
@@ -29,6 +33,13 @@ class Themer {
     _chosenFont = font;
     _refresh();
   }
+
+  setContentAlign(ContentAlign contentAlign) {
+    _chosenContentAlign = ContentAlign.center;
+    _refresh();
+  }
+
+  contentAlign() => _chosenContentAlign;
 
 
   /// Colors
@@ -48,7 +59,7 @@ class Themer {
   Color _primaryExtraLight = Color(0xFFBBDEFB);
   primaryExtraLight() => _primaryExtraLight;
 
-  static const _defaultTextBodyColor = Color(0xDD604B41);
+  static const _defaultTextBodyColor = Color(0xDD646464);
   Color _textBodyColor = _defaultTextBodyColor;
   textBodyColor() => _textBodyColor;
 

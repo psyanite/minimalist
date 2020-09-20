@@ -1,7 +1,14 @@
 import 'package:minimalist/model/todo_item.dart';
 
-class AddTodoItem {
-  final TodoItem item;
+class AddTodo {
+  final TodoItem todo;
 
-  AddTodoItem(this.item);
+  AddTodo(this.todo);
+}
+
+class ReorderTodo {
+  final int oldIndex;
+  final int newIndex;
+
+  ReorderTodo(this.oldIndex, this.newIndex);
 }

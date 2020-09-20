@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class Burnt {
-
   /// Colors
   static const materialPrimary = Colors.blue;
   static const primary = Colors.blue;
@@ -32,9 +31,14 @@ class Burnt {
   static const fontBold = FontWeight.w600;
   static const fontExtraBold = FontWeight.w800;
   static var display4 = TextStyle(fontSize: 28.0);
-  static var bodyStyle = TextStyle(color: textBodyColor, fontSize: 14.0, fontFamily: Burnt.fontBase, fontWeight: Burnt.fontLight);
-  static var appBarTitleStyle =
-  TextStyle(color: Burnt.primary, fontSize: 22.0, fontFamily: Burnt.fontBase, fontWeight: Burnt.fontLight, letterSpacing: 3.0);
+  static var bodyStyle =
+      TextStyle(color: textBodyColor, fontSize: 14.0, fontFamily: Burnt.fontBase, fontWeight: Burnt.fontLight);
+  static var appBarTitleStyle = TextStyle(
+      color: Burnt.primary,
+      fontSize: 22.0,
+      fontFamily: Burnt.fontBase,
+      fontWeight: Burnt.fontLight,
+      letterSpacing: 3.0);
   static var titleStyle = TextStyle(fontSize: 20.0, fontWeight: Burnt.fontBold);
 
   /// Gradients
@@ -61,12 +65,13 @@ class Burnt {
       textTheme: Theme.of(context)
           .textTheme
           .apply(
-        bodyColor: Burnt.textBodyColor,
-        displayColor: Burnt.textBodyColor,
-        fontFamily: Burnt.fontBase,
-      )
-          .merge(TextTheme(bodyText2: TextStyle(fontSize: 18.0))),
+            bodyColor: Burnt.textBodyColor,
+            displayColor: Burnt.textBodyColor,
+            fontFamily: Burnt.fontBase,
+          )
+          .merge(TextTheme(
+          bodyText2: TextStyle(fontSize: 22.0),
+      )),
     );
   }
-
 }

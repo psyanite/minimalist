@@ -1,15 +1,17 @@
 import 'package:redux/redux.dart';
 
-import '../../../model/todo_item.dart';
 import 'todo_actions.dart';
 import 'todo_state.dart';
 
 Reducer<TodoState> todoReducer = combineReducers([
-  new TypedReducer<TodoState, AddTodoItem>(addTodoItem),
+  new TypedReducer<TodoState, AddTodo>(addTodo),
+  new TypedReducer<TodoState, ReorderTodo>(reorderTodo),
 ]);
 
-TodoState addTodoItem(TodoState state, AddTodoItem action) {
-  List<TodoItem> items = state.items;
-  items.add(action.item);
-  return state.copyWith(items: items);
+TodoState addTodo(TodoState state, AddTodo action) {
+  return state.addTodo(action.todo);
+}
+
+TodoState reorderTodo(TodoState state, ReorderTodo action) {
+  return state.reorderTodo(action.oldIndex, action.newIndex);
 }

@@ -32,6 +32,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, int>(
       onInit: (Store<AppState> store) async {
+        var settings = store.state.settings;
+        Themer().init(settings.themeChoice, settings.fontChoice, settings.contentAlign);
       },
       converter: (Store<AppState> store) => 1,
       builder: (BuildContext context, int props) {

@@ -31,6 +31,24 @@ class TodoState {
     };
   }
 
+  TodoState addTodo(TodoItem todo) {
+    var clone = cloneTodoItems();
+    clone.add(todo);
+    return copyWith(items: clone);
+  }
+
+  TodoState reorderTodo(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) newIndex -= 1;
+    var clone = cloneTodoItems();
+    var todo = clone.removeAt(oldIndex);
+    clone.insert(newIndex, todo);
+    return copyWith(items: clone);
+  }
+
+  List<TodoItem> cloneTodoItems() {
+    return List<TodoItem>.from(items);
+  }
+
   @override
   String toString() {
     return '''{

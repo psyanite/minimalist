@@ -18,7 +18,7 @@ class AddTodoDialog extends StatelessWidget {
     return StoreConnector<AppState, Function>(
       converter: (Store<AppState> store) {
         return (item) {
-          return store.dispatch(AddTodoItem(item));
+          return store.dispatch(AddTodo(item));
         };
       },
       builder: (BuildContext context, Function addTodoItem) {
