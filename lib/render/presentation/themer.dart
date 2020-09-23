@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
+import 'package:provider/provider.dart';
+
+import '../../main.dart';
 
 class Themer {
   static final Themer _singleton = Themer._internal();
@@ -11,9 +14,9 @@ class Themer {
   static String _mainFont = 'ptsans';
 
   static ContentAlign _chosenContentAlign = ContentAlign.center;
+  static VerticalContentAlign _chosenVerticalContentAlign = VerticalContentAlign.top;
 
   Themer._internal();
-
 
   // Setup
 
@@ -35,11 +38,14 @@ class Themer {
   }
 
   setContentAlign(ContentAlign contentAlign) {
-    _chosenContentAlign = ContentAlign.center;
-    _refresh();
+    _chosenContentAlign = contentAlign;
   }
-
   contentAlign() => _chosenContentAlign;
+
+  setVerticalContentAlign(VerticalContentAlign contentAlign) {
+    _chosenVerticalContentAlign = contentAlign;
+  }
+  verticalContentAlign() => _chosenVerticalContentAlign;
 
 
   /// Colors
@@ -150,7 +156,8 @@ class Themer {
       letterSpacing: 3.0);
   appBarTitleStyle() => _appBarTitleStyle;
 
-  TextStyle _titleStyle = TextStyle(fontSize: 20.0, fontWeight: _defaultFontBold);
+  TextStyle _listNameTitleStyle = TextStyle(fontSize: 28.0, fontWeight: _defaultFontBold);
+  listNameTitleStyle() => _listNameTitleStyle;
 
   /// Gradients
   static const _burntGradient = LinearGradient(
@@ -169,18 +176,24 @@ class Themer {
   );
   buttonGradient() => _buttonGradient;
 
-  ThemeData getTheme(BuildContext context) {
+  ThemeData getThemeData() {
+    final defaultTheme = ThemeData(brightness: Brightness.light);
     return ThemeData(
       brightness: Brightness.light,
       primarySwatch: materialPrimary(),
       accentColor: materialPrimary(),
       fontFamily: fontBase(),
       cursorColor: primary(),
-      textTheme: Theme.of(context)
-          .textTheme
+      textTheme: defaultTheme.textTheme
           .apply(bodyColor: textBodyColor(), displayColor: textBodyColor(), fontFamily: fontBase())
           .merge(TextTheme(bodyText2: TextStyle(fontSize: 18.0))),
     );
+  }
+
+  void updateTheme(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    final themeData = getThemeData();
+    themeNotifier.setTheme(themeData);
   }
 
   _refresh() {
@@ -212,18 +225,28 @@ class Themer {
       default: { _mainFont = 'PTSans'; } break;
     }
 
+    var isPtSans = _chosenFont == FontChoice.ptSans;
+
     _fontBase = _mainFont;
+
+    _textBodyColor = isPtSans
+      ? _defaultTextBodyColor : Color(0xCC646464);
 
     _bodyStyle = TextStyle(color: textBodyColor(), fontSize: 14.0, fontFamily: _fontBase, fontWeight: _fontLight);
 
-    _appBarTitleStyle = TextStyle(
-        color: _primary,
-        fontSize: 22.0,
-        fontFamily: _fontBase,
-        fontWeight: _fontLight,
-        letterSpacing: 3.0);
-
-    _titleStyle = TextStyle(fontSize: 20.0, fontWeight: _fontBold);
+    _appBarTitleStyle = isPtSans
+      ? TextStyle(
+      color: _primary,
+      fontSize: 22.0,
+      fontFamily: _fontBase,
+      fontWeight: _fontLight,
+      letterSpacing: 3.0)
+    : TextStyle(
+      color: _primary,
+      fontSize: 22.0,
+      fontFamily: _fontBase,
+      fontWeight: FontWeight.w300,
+      letterSpacing: 3.0);
   }
 
   factory Themer() {

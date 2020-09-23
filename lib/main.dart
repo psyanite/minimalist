@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/render/presentation/themer.dart';
-import 'package:minimalist/render/home/home_screen.dart';
 import 'package:minimalist/render/screens/splash_screen.dart';
 import 'package:minimalist/state/app/app_middleware.dart';
 import 'package:minimalist/state/app/app_reducer.dart';
 import 'package:minimalist/state/app/app_state.dart';
+import 'package:provider/provider.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_logging/redux_logging.dart';
 import 'package:redux_persist/redux_persist.dart';
 import 'package:redux_persist_flutter/redux_persist_flutter.dart';
+
+import 'render/components/common/main_navigator.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +43,13 @@ main() async {
     initialState: initialState ?? AppState(),
     middleware: createMiddleware(),
   );
-  runApp(Main(store: store));
+
+  runApp(
+    ChangeNotifierProvider<ThemeNotifier>(
+      create: (_) => ThemeNotifier(Themer().getThemeData()),
+      child: Main(store: store),
+    ),
+  );
 }
 
 class MainRoutes {
@@ -56,17 +64,16 @@ class Main extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Color(0xFFEEEEEE),
+      systemNavigationBarDividerColor: null,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ));
 
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          systemNavigationBarColor: Color(0xFFEEEEEE),
-          systemNavigationBarDividerColor: null,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
-        )
-    );
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
 
     return StoreProvider<AppState>(
       store: store,
@@ -74,11 +81,11 @@ class Main extends StatelessWidget {
         title: 'Burntoast',
         debugShowCheckedModeBanner: false,
         color: Color(0xFFF2993E),
-        theme: Themer().getTheme(context),
+        theme: themeNotifier.getTheme(),
         initialRoute: MainRoutes.splash,
         routes: <String, WidgetBuilder>{
           MainRoutes.splash: (context) => SplashScreen(),
-          MainRoutes.home: (context) => HomeScreen(),
+          MainRoutes.home: (context) => MainNavigator(),
         },
         builder: (context, child) {
           var currentTsf = MediaQuery.of(context).textScaleFactor;
@@ -90,5 +97,18 @@ class Main extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class ThemeNotifier with ChangeNotifier {
+  ThemeData _themeData;
+
+  ThemeNotifier(this._themeData);
+
+  getTheme() => _themeData;
+
+  setTheme(ThemeData themeData) async {
+    _themeData = themeData;
+    notifyListeners();
   }
 }

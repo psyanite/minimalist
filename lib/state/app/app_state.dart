@@ -9,32 +9,34 @@ class AppState {
 
   AppState({TodoState todo, SettingsState settings})
       : todo = todo ?? TodoState.initialState(),
-       settings = settings ?? SettingsState.initialState();
+        settings = settings ?? SettingsState.initialState();
 
   static AppState rehydrate(dynamic json) {
+    // return AppState();
     if (json == null) return AppState();
     try {
       return AppState(
         todo: json['todo'] != null ? TodoState.rehydrate(json['todo']) : TodoState.initialState(),
         settings: json['settings'] != null ? SettingsState.rehydrate(json['settings']) : SettingsState.initialState(),
       );
-    }
-    catch (e, stack) {
+    } catch (e, stack) {
       print('[ERROR] Could not deserialize json from persistor: $e, $stack');
       return AppState();
     }
   }
 
   // Used by persistor
-  Map<String, dynamic> toJson() => {
-    'todo': todo.toPersist(),
-    'settings': settings.toPersist(),
-  };
+  Map<String, dynamic> toJson() {
+    return {
+      'todo': todo.toPersist(),
+      'settings': settings.toPersist(),
+    };
+  }
 
   AppState copyWith({TodoState todo, SettingsState settings}) {
     return AppState(
-        todo: todo ?? this.todo,
-        settings: settings ?? this.settings,
+      todo: todo ?? this.todo,
+      settings: settings ?? this.settings,
     );
   }
 

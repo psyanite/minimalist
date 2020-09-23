@@ -8,7 +8,7 @@ import 'package:minimalist/state/settings/settings_actions.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
 import 'package:redux/redux.dart';
 
-class SettingsScreen extends StatelessWidget {
+class ThemeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _Props>(
@@ -18,6 +18,7 @@ class SettingsScreen extends StatelessWidget {
           currentTheme: props.currentTheme,
           currentFont: props.currentFont,
           currentAlign: props.currentAlign,
+          currentVerticalAlign: props.currentVerticalAlign,
           dispatch: props.dispatch,
         );
       },
@@ -29,41 +30,24 @@ class _Presenter extends StatefulWidget {
   final ThemeChoice currentTheme;
   final FontChoice currentFont;
   final ContentAlign currentAlign;
+  final VerticalContentAlign currentVerticalAlign;
   final Function dispatch;
 
-  _Presenter({Key key, this.currentTheme, this.currentFont, this.currentAlign, this.dispatch}) : super(key: key);
+  _Presenter({Key key, this.currentTheme, this.currentFont, this.currentAlign, this.currentVerticalAlign, this.dispatch}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
 }
 
 class _PresenterState extends State<_Presenter> {
+
   @override
   Widget build(BuildContext context) {
     var slivers = <Widget>[
-      _appBar(),
+      Header('THEME'),
       _controls(),
     ];
     return Scaffold(body: CustomScrollView(slivers: slivers));
-  }
-
-  Widget _appBar() {
-    return SliverSafeArea(
-      sliver: SliverToBoxAdapter(
-        child: Container(
-          padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 35.0, bottom: 20.0),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-            Stack(
-              children: <Widget>[
-                Container(width: 50.0, height: 60.0),
-                Positioned(left: -12.0, child: BackArrow(color: Themer().lightGrey())),
-              ],
-            ),
-            Text('CUSTOMISE', style: Themer().appBarTitleStyle())
-          ]),
-        ),
-      ),
-    );
   }
 
   Widget _controls() {
@@ -71,27 +55,35 @@ class _PresenterState extends State<_Presenter> {
       _themeControl(),
       _fontControl(),
       _textAlignControl(),
+      _verticalTextAlignControl(),
     ];
 
     return SliverToBoxAdapter(
-        child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: ListView.separated(
-        shrinkWrap: true,
-        itemBuilder: (context, index) => controlOptions[index],
-        separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separatorBlue()),
-        itemCount: controlOptions.length,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        child: ListView.separated(
+          shrinkWrap: true,
+          itemBuilder: (context, index) => controlOptions[index],
+          separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separatorBlue()),
+          itemCount: controlOptions.length,
+        ),
       ),
-    ));
+    );
   }
 
   Widget _themeControl() {
-    var dispatch = (value) => widget.dispatch(SetThemeChoice(value));
+    var dispatch = (value) {
+      Themer().setChosenTheme(value);
+      Themer().updateTheme(context);
+      widget.dispatch(SetThemeChoice(value));
+    };
     var options = [
       _SettingOption(ThemeChoice.cyan, 'Color Scheme', 'Changes accent colors', 'Cyan', dispatch, color: Colors.cyan),
       _SettingOption(ThemeChoice.blue, 'Color Scheme', 'Changes accent colors', 'Blue', dispatch, color: Colors.blue),
-      _SettingOption(ThemeChoice.indigo, 'Color Scheme', 'Changes accent colors', 'Indigo', dispatch, color: Colors.indigo),
-      _SettingOption(ThemeChoice.blueGrey, 'Color Scheme', 'Changes accent colors', 'Blue Grey', dispatch, color: Colors.blueGrey),
+      _SettingOption(ThemeChoice.indigo, 'Color Scheme', 'Changes accent colors', 'Indigo', dispatch,
+        color: Colors.indigo),
+      _SettingOption(ThemeChoice.blueGrey, 'Color Scheme', 'Changes accent colors', 'Blue Grey', dispatch,
+        color: Colors.blueGrey),
       _SettingOption(ThemeChoice.grey, 'Color Scheme', 'Changes accent colors', 'Grey', dispatch, color: Colors.grey),
     ];
     var selected = options.indexWhere((o) => o.value == widget.currentTheme);
@@ -99,7 +91,11 @@ class _PresenterState extends State<_Presenter> {
   }
 
   Widget _fontControl() {
-    var dispatch = (value) => widget.dispatch(SetFontChoice(value));
+    var dispatch = (value) {
+      Themer().setChosenFont(value);
+      Themer().updateTheme(context);
+      widget.dispatch(SetFontChoice(value));
+    };
     var options = [
       _SettingOption(FontChoice.ptSans, 'Font', 'Changes font', 'PT Sans', dispatch),
       _SettingOption(FontChoice.productSans, 'Font', 'Changes font', 'Product Sans', dispatch),
@@ -109,13 +105,32 @@ class _PresenterState extends State<_Presenter> {
   }
 
   Widget _textAlignControl() {
-    var dispatch = (value) => widget.dispatch(SetContentAlign(value));
+    var dispatch = (value) {
+      Themer().setContentAlign(value);
+      Themer().updateTheme(context);
+      widget.dispatch(SetContentAlign(value));
+    };
     var options = [
-      _SettingOption(ContentAlign.left, 'Content Align', 'Aligns text and titles', 'Left', dispatch),
-      _SettingOption(ContentAlign.right, 'Content Align', 'Aligns text and titles', 'Right', dispatch),
-      _SettingOption(ContentAlign.center, 'Content Align', 'Aligns text and titles', 'Center', dispatch),
+      _SettingOption(ContentAlign.left, 'Content Align', 'Aligns todo items', 'Left', dispatch),
+      _SettingOption(ContentAlign.right, 'Content Align', 'Aligns todo items', 'Right', dispatch),
+      _SettingOption(ContentAlign.center, 'Content Align', 'Aligns todo items', 'Center', dispatch),
     ];
     var selected = options.indexWhere((o) => o.value == widget.currentAlign);
+    return _SettingControl(options: options, selected: selected);
+  }
+
+  Widget _verticalTextAlignControl() {
+    var dispatch = (value) {
+      Themer().setVerticalContentAlign(value);
+      Themer().updateTheme(context);
+      widget.dispatch(SetVerticalContentAlign(value));
+    };
+    var options = [
+      _SettingOption(VerticalContentAlign.top, 'Vertical Content Align', 'Aligns todo items', 'Top', dispatch),
+      _SettingOption(VerticalContentAlign.center, 'Vertical Content Align', 'Aligns todo items', 'Center', dispatch),
+      _SettingOption(VerticalContentAlign.bottom, 'Vertical Content Align', 'Aligns todo items', 'Bottom', dispatch),
+    ];
+    var selected = options.indexWhere((o) => o.value == widget.currentVerticalAlign);
     return _SettingControl(options: options, selected: selected);
   }
 }
@@ -217,8 +232,8 @@ class _SettingControl extends StatelessWidget {
               InkWell(
                 onTap: () => Navigator.of(context).pop(),
                 child: Container(
-                    child: Text('Cancel', style: TextStyle(color: Themer().hintTextColor())),
-                    padding: EdgeInsets.only(bottom: 10.0)),
+                  child: Text('Cancel', style: TextStyle(color: Themer().hintTextColor())),
+                  padding: EdgeInsets.only(bottom: 10.0)),
               ),
             ],
           ),
@@ -232,9 +247,10 @@ class _Props {
   final ThemeChoice currentTheme;
   final FontChoice currentFont;
   final ContentAlign currentAlign;
+  final VerticalContentAlign currentVerticalAlign;
   final Function dispatch;
 
-  _Props({this.currentTheme, this.currentFont, this.currentAlign, this.dispatch});
+  _Props({this.currentTheme, this.currentFont, this.currentAlign, this.currentVerticalAlign, this.dispatch});
 
   static _Props fromStore(Store<AppState> store) {
     return _Props(
@@ -242,6 +258,7 @@ class _Props {
       currentTheme: store.state.settings.themeChoice,
       currentFont: store.state.settings.fontChoice,
       currentAlign: store.state.settings.contentAlign,
+      currentVerticalAlign: store.state.settings.verticalContentAlign,
     );
   }
 }

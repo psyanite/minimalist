@@ -54,7 +54,6 @@ typedef ReorderCallback = void Function(int oldIndex, int newIndex);
 ///
 /// {@youtube 560 315 https://www.youtube.com/watch?v=3fB1mxOsqJE}
 class ReorderableListyView extends StatefulWidget {
-
   /// Creates a reorderable list.
   ReorderableListyView({
     Key key,
@@ -65,14 +64,15 @@ class ReorderableListyView extends StatefulWidget {
     this.scrollDirection = Axis.vertical,
     this.padding,
     this.reverse = false,
-  }) : assert(scrollDirection != null),
-       assert(onReorder != null),
-       assert(children != null),
-       assert(
-         children.every((Widget w) => w.key != null),
-         'All children of this widget must have a key.',
-       ),
-       super(key: key);
+    this.columnMainAxisAlignment = MainAxisAlignment.start,
+  })  : assert(scrollDirection != null),
+        assert(onReorder != null),
+        assert(children != null),
+        assert(
+          children.every((Widget w) => w.key != null),
+          'All children of this widget must have a key.',
+        ),
+        super(key: key);
 
   /// A non-reorderable header widget to show before the list.
   ///
@@ -112,6 +112,8 @@ class ReorderableListyView extends StatefulWidget {
   ///
   /// Defaults to false.
   final bool reverse;
+
+  final MainAxisAlignment columnMainAxisAlignment;
 
   /// Called when a list child is dropped into a new position to shuffle the
   /// underlying list.
@@ -154,6 +156,7 @@ class _ReorderableListyViewState extends State<ReorderableListyView> {
           onReorder: widget.onReorder,
           padding: widget.padding,
           reverse: widget.reverse,
+          columnMainAxisAlignment: widget.columnMainAxisAlignment,
         );
       },
     );
@@ -161,10 +164,8 @@ class _ReorderableListyViewState extends State<ReorderableListyView> {
 
   @override
   Widget build(BuildContext context) {
-    return Overlay(
-      key: _overlayKey,
-      initialEntries: <OverlayEntry>[
-        _listOverlayEntry,
+    return Overlay(key: _overlayKey, initialEntries: <OverlayEntry>[
+      _listOverlayEntry,
     ]);
   }
 }
@@ -180,6 +181,7 @@ class _ReorderableListContent extends StatefulWidget {
     @required this.padding,
     @required this.onReorder,
     @required this.reverse,
+    @required this.columnMainAxisAlignment,
   });
 
   final Widget header;
@@ -189,13 +191,14 @@ class _ReorderableListContent extends StatefulWidget {
   final EdgeInsets padding;
   final ReorderCallback onReorder;
   final bool reverse;
+  final MainAxisAlignment columnMainAxisAlignment;
 
   @override
   _ReorderableListContentState createState() => _ReorderableListContentState();
 }
 
-class _ReorderableListContentState extends State<_ReorderableListContent> with TickerProviderStateMixin<_ReorderableListContent> {
-
+class _ReorderableListContentState extends State<_ReorderableListContent>
+    with TickerProviderStateMixin<_ReorderableListContent> {
   // The extent along the [widget.scrollDirection] axis to allow a child to
   // drop into when the user reorders list children.
   //
@@ -309,8 +312,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent> with T
 
   // Scrolls to a target context if that context is not on the screen.
   void _scrollTo(BuildContext context) {
-    if (_scrolling)
-      return;
+    if (_scrolling) return;
     final RenderObject contextObject = context.findRenderObject();
     final RenderAbstractViewport viewport = RenderAbstractViewport.of(contextObject);
     assert(viewport != null);
@@ -332,11 +334,13 @@ class _ReorderableListContentState extends State<_ReorderableListContent> with T
     // If the context is off screen, then we request a scroll to make it visible.
     if (!onScreen) {
       _scrolling = true;
-      _scrollController.position.animateTo(
+      _scrollController.position
+          .animateTo(
         scrollOffset < bottomOffset ? bottomOffset : topOffset,
         duration: _scrollAnimationDuration,
         curve: Curves.easeInOut,
-      ).then((void value) {
+      )
+          .then((void value) {
         setState(() {
           _scrolling = false;
         });
@@ -346,13 +350,17 @@ class _ReorderableListContentState extends State<_ReorderableListContent> with T
 
   // Wraps children in Row or Column, so that the children flow in
   // the widget's scrollDirection.
-  Widget _buildContainerForScrollDirection({ List<Widget> children }) {
+  Widget _buildContainerForScrollDirection({List<Widget> children}) {
     switch (widget.scrollDirection) {
       case Axis.horizontal:
         return Row(children: children);
       case Axis.vertical:
       default:
-        return Column(children: children);
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: widget.columnMainAxisAlignment,
+          children: children,
+        );
     }
   }
 
@@ -380,8 +388,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent> with T
     // Places the value from startIndex one space before the element at endIndex.
     void reorder(int startIndex, int endIndex) {
       setState(() {
-        if (startIndex != endIndex)
-          widget.onReorder(startIndex, endIndex);
+        if (startIndex != endIndex) widget.onReorder(startIndex, endIndex);
         // Animates leftover space in the drop area closed.
         _ghostController.reverse(from: 0.1);
         _entranceController.reverse(from: 0.1);
@@ -541,8 +548,8 @@ class _ReorderableListContentState extends State<_ReorderableListContent> with T
           // If the target is not the original starting point, then we will accept the drop.
           return _dragging == toAccept && toAccept != toWrap.key;
         },
-        onAccept: (Key accepted) { },
-        onLeave: (Object leaving) { },
+        onAccept: (Key accepted) {},
+        onLeave: (Object leaving) {},
       );
     });
   }
@@ -581,12 +588,35 @@ class _ReorderableListContentState extends State<_ReorderableListContent> with T
         padding: widget.padding,
         controller: _scrollController,
         reverse: widget.reverse,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: constraints.maxHeight,
+          ),
+          child: _buildContainerForScrollDirection(
+            children: <Widget>[
+              if (widget.reverse && hasMoreThanOneChildElement)
+                _wrap(finalDropArea, widget.children.length, constraints),
+              if (widget.header != null) widget.header,
+              for (int i = 0; i < widget.children.length; i += 1) _wrap(widget.children[i], i, constraints),
+              if (!widget.reverse && hasMoreThanOneChildElement)
+                _wrap(finalDropArea, widget.children.length, constraints),
+            ],
+          ),
+        ),
+      );
+
+      return SingleChildScrollView(
+        scrollDirection: widget.scrollDirection,
+        padding: widget.padding,
+        controller: _scrollController,
+        reverse: widget.reverse,
         child: _buildContainerForScrollDirection(
           children: <Widget>[
             if (widget.reverse && hasMoreThanOneChildElement) _wrap(finalDropArea, widget.children.length, constraints),
             if (widget.header != null) widget.header,
             for (int i = 0; i < widget.children.length; i += 1) _wrap(widget.children[i], i, constraints),
-            if (!widget.reverse && hasMoreThanOneChildElement) _wrap(finalDropArea, widget.children.length, constraints),
+            if (!widget.reverse && hasMoreThanOneChildElement)
+              _wrap(finalDropArea, widget.children.length, constraints),
           ],
         ),
       );

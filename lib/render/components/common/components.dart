@@ -381,6 +381,33 @@ class CenterTextSliver extends StatelessWidget {
   }
 }
 
+class Header extends StatelessWidget {
+  final String title;
+
+  const Header(this.title, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverSafeArea(
+      sliver: SliverToBoxAdapter(
+        child: Container(
+          padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 35.0, bottom: 20.0),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+            Stack(
+              children: <Widget>[
+                Container(width: 50.0, height: 60.0),
+                Positioned(left: -12.0, child: BackArrow(color: Themer().lightGrey())),
+              ],
+            ),
+            Text(title, style: Themer().appBarTitleStyle())
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
+
 class HeartIcon extends StatelessWidget {
   final bool isHollow;
   final double size;
@@ -410,7 +437,8 @@ class NetworkImg extends StatelessWidget {
   final EdgeInsets margin;
   final BoxFit fit;
 
-  NetworkImg(this.url, {
+  NetworkImg(
+    this.url, {
     Key key,
     this.width,
     this.height,
@@ -438,6 +466,31 @@ class NetworkImg extends StatelessWidget {
       decoration: BoxDecoration(
         color: Themer().imgPlaceholderColor(),
         image: DecorationImage(image: CachedNetworkImageProvider(url), fit: BoxFit.cover),
+      ),
+    );
+  }
+}
+
+class ModalWrapper extends StatelessWidget {
+  final List<Widget> children;
+  final EdgeInsets padding;
+  final int width;
+
+  const ModalWrapper({Key key, this.children, this.padding, this.width}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedPadding(
+      padding: MediaQuery.of(context).viewInsets,
+      duration: Duration(milliseconds: 100),
+      curve: Curves.ease,
+      child: Container(
+        padding: padding ?? EdgeInsets.only(top: 20.0, bottom: 30.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: children,
+        ),
       ),
     );
   }

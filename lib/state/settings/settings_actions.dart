@@ -18,3 +18,9 @@ class SetContentAlign {
 
   SetContentAlign(this.align);
 }
+
+class SetVerticalContentAlign {
+  final VerticalContentAlign align;
+
+  SetVerticalContentAlign(this.align);
+}
