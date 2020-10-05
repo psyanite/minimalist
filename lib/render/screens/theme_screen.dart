@@ -44,7 +44,7 @@ class _PresenterState extends State<_Presenter> {
   @override
   Widget build(BuildContext context) {
     var slivers = <Widget>[
-      Header('THEME'),
+      HeaderSliver(title: 'THEME'),
       _controls(),
     ];
     return Scaffold(body: CustomScrollView(slivers: slivers));
@@ -60,7 +60,7 @@ class _PresenterState extends State<_Presenter> {
 
     return SliverToBoxAdapter(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        padding: EdgeInsets.symmetric(horizontal: 50.0),
         child: ListView.separated(
           shrinkWrap: true,
           itemBuilder: (context, index) => controlOptions[index],

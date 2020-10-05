@@ -8,6 +8,7 @@ import 'package:minimalist/render/components/dialog/confirm.dart';
 import 'package:minimalist/render/components/dialog/multi_select_dialog.dart';
 import 'package:minimalist/render/home/set_list_name_dialog.dart';
 import 'package:minimalist/render/presentation/themer.dart';
+import 'package:minimalist/render/screens/terms_screen.dart';
 import 'package:minimalist/services/navi.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:minimalist/state/me/todos/todo_actions.dart';

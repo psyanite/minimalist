@@ -8,10 +8,10 @@ import 'package:minimalist/state/app/app_state.dart';
 import 'package:minimalist/state/me/todos/todo_actions.dart';
 import 'package:redux/redux.dart';
 
-class AddTodoDialog extends StatelessWidget {
+class AddTodoScreen extends StatelessWidget {
   final int listId;
 
-  const AddTodoDialog(this.listId, {Key key}) : super(key: key);
+  const AddTodoScreen(this.listId, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,29 +47,36 @@ class _PresenterState extends State<_Presenter> {
 
   @override
   Widget build(BuildContext context) {
-    return ModalWrapper(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30.0),
-          child: Column(children: <Widget>[
-            _titleField(),
-            if (_showDesc) _descField(),
-          ]),
-        ),
-        Container(height: 10.0),
-        buttons(),
-      ],
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Header(),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+              titleField(),
+              _showDesc ? descField() : addDetailsButton(),
+            ]),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 50.0, left: 30.0, right: 30.0),
+            child: okButton(),
+          )
+        ],
+      ),
     );
   }
 
-  Widget _titleField() {
+  Widget titleField() {
     return Container(
       width: 300.0,
       child: TextField(
-        style: TextStyle(fontSize: 18.0),
+        style: TextStyle(fontSize: 36.0),
         autofocus: true,
-        maxLines: null,
-        keyboardType: TextInputType.multiline,
+        onSubmitted: (text) => submit(),
         onChanged: (text) => setState(() => _title = text),
         decoration: InputDecoration(
           hintText: 'New todo',
@@ -81,7 +88,7 @@ class _PresenterState extends State<_Presenter> {
     );
   }
 
-  Widget _descField() {
+  Widget descField() {
     return Container(
       width: 300.0,
       child: TextField(
@@ -100,41 +107,23 @@ class _PresenterState extends State<_Presenter> {
   }
 
   Widget okButton() {
-    var color = _title == null ? Themer().lightTextColor() : Themer().primaryTextColor();
-    return InkWell(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      onTap: () => submit(context),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        child: Text('Save', style: TextStyle(fontWeight: Themer().fontBold(), color: color)),
-      ),
-    );
+    var color = _title == null ? Themer().lightGrey() : Themer().primaryTextColor();
+    return BurntButton(text: 'Save', onPressed: submit, color: color);
   }
 
-  Widget showDescButton() {
+  Widget addDetailsButton() {
     return InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       onTap: () => setState(() => _showDesc = !_showDesc),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+        padding: EdgeInsets.symmetric(vertical: 10.0),
         child: Text('Add details', style: TextStyle(color: Themer().anchorColor())),
       ),
     );
   }
 
-  Widget buttons() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        _showDesc ? Container() : showDescButton(),
-        okButton(),
-      ]),
-    );
-  }
-
-  void submit(BuildContext context) {
+  void submit() {
     if (_title != null) {
       var todoItem = TodoItem(title: _title, desc: _desc);
       widget.addTodoItem(todoItem);

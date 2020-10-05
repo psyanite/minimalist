@@ -65,7 +65,7 @@ class Themer {
   Color _primaryExtraLight = Color(0xFFBBDEFB);
   primaryExtraLight() => _primaryExtraLight;
 
-  static const _defaultTextBodyColor = Color(0xDD646464);
+  static const _defaultTextBodyColor = Color(0xFF29355C);
   Color _textBodyColor = _defaultTextBodyColor;
   textBodyColor() => _textBodyColor;
 
@@ -150,13 +150,13 @@ class Themer {
 
   TextStyle _appBarTitleStyle = TextStyle(
       color: _defaultPrimary,
-      fontSize: 22.0,
+      fontSize: 30.0,
       fontFamily: _defaultFontBase,
       fontWeight: _defaultFontLight,
       letterSpacing: 3.0);
   appBarTitleStyle() => _appBarTitleStyle;
 
-  TextStyle _listNameTitleStyle = TextStyle(fontSize: 28.0, fontWeight: _defaultFontBold);
+  TextStyle _listNameTitleStyle = TextStyle(fontSize: 30.0, fontWeight: _defaultFontBold);
   listNameTitleStyle() => _listNameTitleStyle;
 
   /// Gradients
@@ -186,7 +186,7 @@ class Themer {
       cursorColor: primary(),
       textTheme: defaultTheme.textTheme
           .apply(bodyColor: textBodyColor(), displayColor: textBodyColor(), fontFamily: fontBase())
-          .merge(TextTheme(bodyText2: TextStyle(fontSize: 18.0))),
+          .merge(TextTheme(bodyText2: TextStyle(fontSize: 22.0))),
     );
   }
 
@@ -237,13 +237,13 @@ class Themer {
     _appBarTitleStyle = isPtSans
       ? TextStyle(
       color: _primary,
-      fontSize: 22.0,
+      fontSize: 28.0,
       fontFamily: _fontBase,
       fontWeight: _fontLight,
       letterSpacing: 3.0)
     : TextStyle(
       color: _primary,
-      fontSize: 22.0,
+      fontSize: 28.0,
       fontFamily: _fontBase,
       fontWeight: FontWeight.w300,
       letterSpacing: 3.0);

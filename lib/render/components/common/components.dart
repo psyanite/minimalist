@@ -178,6 +178,7 @@ class BurntButton extends StatelessWidget {
   final Function onPressed;
   final double padding;
   final double fontSize;
+  final Color color;
 
   BurntButton({
     Key key,
@@ -187,6 +188,7 @@ class BurntButton extends StatelessWidget {
     this.onPressed,
     this.padding,
     this.fontSize,
+    this.color,
   }) : super(key: key);
 
   @override
@@ -195,14 +197,7 @@ class BurntButton extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: padding ?? 20.0),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(2.0)),
-            gradient: LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
-              stops: [0, 0.3],
-              colors: [Color(0xFFFFC86B), Color(0xFFFFAB40)],
-            )),
+        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(2.0)), color: color ?? Themer().primary()),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -381,17 +376,17 @@ class CenterTextSliver extends StatelessWidget {
   }
 }
 
-class Header extends StatelessWidget {
+class HeaderSliver extends StatelessWidget {
   final String title;
 
-  const Header(this.title, {Key key}) : super(key: key);
+  const HeaderSliver({Key key, this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SliverSafeArea(
       sliver: SliverToBoxAdapter(
         child: Container(
-          padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 35.0, bottom: 20.0),
+          padding: EdgeInsets.only(left: 50.0, right: 50.0, top: 35.0, bottom: 20.0),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
             Stack(
               children: <Widget>[
@@ -399,7 +394,7 @@ class Header extends StatelessWidget {
                 Positioned(left: -12.0, child: BackArrow(color: Themer().lightGrey())),
               ],
             ),
-            Text(title, style: Themer().appBarTitleStyle())
+            if (title != null) Text(title, style: Themer().appBarTitleStyle())
           ]),
         ),
       ),
@@ -407,6 +402,34 @@ class Header extends StatelessWidget {
   }
 }
 
+class Header extends StatelessWidget {
+  final String title;
+
+  const Header({Key key, this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+            padding: EdgeInsets.only(left: 30.0, right: 30.0, top: 35.0, bottom: 20.0),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+              Stack(
+                children: <Widget>[
+                  Container(width: 50.0, height: 60.0),
+                  Positioned(left: -12.0, child: BackArrow(color: Themer().lightGrey())),
+                ],
+              ),
+              if (title != null) Text(title, style: Themer().appBarTitleStyle())
+            ]),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class HeartIcon extends StatelessWidget {
   final bool isHollow;

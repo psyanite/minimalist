@@ -92,14 +92,14 @@ class _PresenterState extends State<_Presenter> {
   Widget buttons() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      child: Row(mainAxisAlignment: MainAxisAlignment.end,  children: [
         okButton(),
       ]),
     );
   }
 
   void submit(BuildContext context) {
-    widget.setListName(_name);
+    widget.setListName(_name ?? '');
     Navigator.of(context).pop();
   }
 }

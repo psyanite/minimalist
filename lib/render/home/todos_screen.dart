@@ -5,7 +5,7 @@ import 'package:minimalist/models/todo_item.dart';
 import 'package:minimalist/models/todo_list.dart';
 import 'package:minimalist/render/components/common/reorderable_listy.dart';
 import 'package:minimalist/render/components/common/ring_button.dart';
-import 'package:minimalist/render/home/add_todo_dialog.dart';
+import 'package:minimalist/render/home/add_todo_screen.dart';
 import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/render/screens/about_screen.dart';
 import 'package:minimalist/render/screens/theme_screen.dart';
@@ -54,14 +54,18 @@ class _PresenterState extends State<_Presenter> {
       endDrawer: _drawer(context),
       body: SafeArea(
         child: Container(
-            child: Column(
-              children: [
-                Container(height: 50.0),
-                _title(),
-                Container(height: 20.0),
-                Flexible(child: _todos()),
-              ],
-            ),
+          child: Column(
+            children: [
+              Container(height: 50.0),
+              _title(),
+              Container(height: 20.0),
+              Flexible(
+                  child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 50.0),
+                child: _todos(),
+              )),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: _bottom(),
@@ -69,27 +73,25 @@ class _PresenterState extends State<_Presenter> {
   }
 
   Widget _title() {
-    return Container(child: Text(widget.todoList.name, style: Themer().listNameTitleStyle()));
+    return Container(height: 30.0, child: Text(widget.todoList.name, style: Themer().listNameTitleStyle()));
   }
 
   Widget _bottom() {
     return Container(
-      margin: EdgeInsets.only(left: 30.0, right: 30.0, bottom: 35.0, top: 20.0),
+      height: 100.0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _moreButton(),
-          _addButton(),
-          _settingsButton(),
+          moreButton(),
+          addButton(),
+          settingsButton(),
         ],
       ),
     );
   }
 
-  Widget _moreButton() {
-    return RingButton(
-      size: 30.0,
-      ringWidth: 20.0,
+  Widget moreButton() {
+    return InkWell(
       onTap: () {
         showModalBottomSheet(
             context: context,
@@ -97,27 +99,41 @@ class _PresenterState extends State<_Presenter> {
               return MoreDialog(widget.listId, widget.todoList);
             });
       },
+      child: Container(
+        height: 100.0,
+        child: Center(
+          child: Container(
+            margin: EdgeInsets.only(left: 50.0, right: 10.0),
+            width: 15.0,
+            height: 15.0,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.0), color: Themer().ringColor()),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _addButton() {
+  Widget addButton() {
     return RingButton(onTap: () {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) {
-          return AddTodoDialog(widget.listId);
-        },
-      );
+      Navigator.push(context, MaterialPageRoute(builder: (_) => AddTodoScreen(widget.listId)));
     });
   }
 
-  Widget _settingsButton() {
+  Widget settingsButton() {
     return Builder(builder: (context) {
-      return RingButton(
-        size: 30.0,
-        ringWidth: 20.0,
+      return InkWell(
         onTap: () => Scaffold.of(context).openEndDrawer(),
+        child: Container(
+          height: 100.0,
+          child: Center(
+            child: Container(
+              margin: EdgeInsets.only(left: 10.0, right: 50.0),
+              width: 15.0,
+              height: 15.0,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.0), color: Themer().ringColor()),
+            ),
+          ),
+        ),
       );
     });
   }
@@ -136,58 +152,13 @@ class _PresenterState extends State<_Presenter> {
         break;
     }
 
-    var children = widget.todoList.todos.map((todo) => _todo(todo));
+    var children = widget.todoList.todos.map((todo) => Container(key: ValueKey(todo), child: TodoCard(todo)));
     return ReorderableListyView(
       children: List<Widget>.from(children),
       columnMainAxisAlignment: columnAlign,
       onReorder: (int oldIndex, int newIndex) {
         widget.dispatch(ReorderTodo(widget.listId, oldIndex, newIndex));
       },
-    );
-  }
-
-  Widget _todo(TodoItem todo) {
-    var textAlign;
-    switch (Themer().contentAlign()) {
-      case ContentAlign.left:
-        textAlign = TextAlign.left;
-        break;
-      case ContentAlign.center:
-        textAlign = TextAlign.left;
-        break;
-      case ContentAlign.right:
-      default:
-        textAlign = TextAlign.right;
-        break;
-    }
-
-    return InkWell(
-      key: ValueKey(todo),
-      onTap: () => _showBottomSheet(todo),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.only(top: 12.0, left: 30.0, right: 30.0, bottom: 12.0),
-              child: Text(todo.title, style: TextStyle(fontSize: 22.0), textAlign: textAlign),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  _showBottomSheet(TodoItem todo) {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) => _todoBottomSheet(todo, context),
-    );
-  }
-
-  Widget _todoBottomSheet(TodoItem todo, BuildContext context) {
-    return Container(
-      child: Text(todo.title),
     );
   }
 
@@ -229,6 +200,68 @@ class _Props {
     return _Props(
       todoList: store.state.todo.lists[todoListId],
       dispatch: (action) => store.dispatch(action),
+    );
+  }
+}
+
+class TodoCard extends StatelessWidget {
+  final TodoItem todo;
+
+  const TodoCard(this.todo, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var textColor = todo.status == TodoStatus.standby ? Themer().textBodyColor() : Themer().hintTextColor();
+    return InkWell(
+      onTap: () => _showBottomSheet(todo, context),
+      child: Padding(
+        padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            _circle(),
+            Expanded(
+              child: Container(
+                child: Text(todo.title, style: TextStyle(fontSize: 22.0, color: textColor)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _circle() {
+    if (todo.status == TodoStatus.standby) {
+      return Container(
+        margin: EdgeInsets.only(right: 30.0, top: 3.0),
+        height: 18.0,
+        width: 18.0,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50.0),
+          border: Border.all(color: Themer().primary(), width: 2.0),
+        ),
+      );
+    } else {
+      return Container(
+        margin: EdgeInsets.only(right: 30.0),
+        height: 18.0,
+        width: 18.0,
+        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50.0)), color: Themer().primary()),
+      );
+    }
+  }
+
+  _showBottomSheet(TodoItem todo, BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) => _todoBottomSheet(todo, context),
+    );
+  }
+
+  Widget _todoBottomSheet(TodoItem todo, BuildContext context) {
+    return Container(
+      child: Text(todo.title),
     );
   }
 }
