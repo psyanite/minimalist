@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/render/presentation/themer.dart';
-import 'package:minimalist/render/screens/splash_screen.dart';
 import 'package:minimalist/state/app/app_middleware.dart';
 import 'package:minimalist/state/app/app_reducer.dart';
 import 'package:minimalist/state/app/app_state.dart';
@@ -54,7 +53,6 @@ main() async {
 
 class MainRoutes {
   static const String home = '/';
-  static const String splash = '/splash';
 }
 
 class Main extends StatelessWidget {
@@ -82,9 +80,8 @@ class Main extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         color: Color(0xFFF2993E),
         theme: themeNotifier.getTheme(),
-        initialRoute: MainRoutes.splash,
+        initialRoute: MainRoutes.home,
         routes: <String, WidgetBuilder>{
-          MainRoutes.splash: (context) => SplashScreen(),
           MainRoutes.home: (context) => MainNavigator(),
         },
         builder: (context, child) {

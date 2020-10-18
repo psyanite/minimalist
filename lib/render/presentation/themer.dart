@@ -50,9 +50,8 @@ class Themer {
 
   /// Colors
   Color _white = Colors.white;
-  white() => Color(0xFFFFFF);
+  white() => _white;
 
-  Color _materialPrimary = Colors.blue;
   materialPrimary() => _mainColor;
 
   static const _defaultPrimary = Colors.blue;
@@ -65,17 +64,17 @@ class Themer {
   Color _primaryExtraLight = Color(0xFFBBDEFB);
   primaryExtraLight() => _primaryExtraLight;
 
-  static const _defaultTextBodyColor = Color(0xFF29355C);
+  static const _defaultTextBodyColor = Color(0xFF292929);
   Color _textBodyColor = _defaultTextBodyColor;
   textBodyColor() => _textBodyColor;
 
   Color _anchorColor = Color(0xFF51A4FF);
   anchorColor() => _anchorColor;
 
-  Color _hintTextColor = Color(0xBB604B41);
+  Color _hintTextColor = Color(0xBB5A5A5A);
   hintTextColor() => _hintTextColor;
 
-  Color _lightTextColor = Color(0x82604B41);
+  Color _lightTextColor = Color(0x825A5A5A);
   lightTextColor() => _lightTextColor;
 
   Color _primaryTextColor = Color(0xFF42A5F5);
@@ -90,10 +89,10 @@ class Themer {
   Color _separatorBlue = Color(0x16007AFF);
   separatorBlue() => _separatorBlue;
 
-  Color _lightGrey = Color(0x44604B41);
+  Color _lightGrey = Color(0x44606060);
   lightGrey() => _lightGrey;
 
-  Color _iconGrey = Color(0x44604B41);
+  Color _iconGrey = Color(0x44606060);
   iconGrey() => _iconGrey;
 
   Color _iconOrange = Color(0xFFBBDEFB);
@@ -102,19 +101,10 @@ class Themer {
   Color _splashPrimary = Color(0xFFE3F2FD);
   splashPrimary() => _splashPrimary;
 
-  Color _imgPlaceholderColor = Color(0x08604B41);
+  Color _imgPlaceholderColor = Color(0x08606060);
   imgPlaceholderColor() => _imgPlaceholderColor;
 
-  Color _lightBlue = Color(0x6C007AFF);
-  lightBlue() => _lightBlue;
-
-  Color _blue = Color(0xFF007AFF);
-  blue() => _blue;
-
-  Color _darkBlue = Color(0xFF4A83C4);
-  darkBlue() => _darkBlue;
-
-  Color _ringColor = Colors.grey[200];
+  Color _ringColor = Color(0x44606060);
   ringColor() => _ringColor;
 
 
@@ -212,7 +202,7 @@ class Themer {
       default: { mainColor = Colors.blue; } break;
     }
 
-    _materialPrimary = mainColor;
+    _mainColor = mainColor;
     _primary = mainColor;
 
     /// TODO: Add more colors
@@ -230,7 +220,7 @@ class Themer {
     _fontBase = _mainFont;
 
     _textBodyColor = isPtSans
-      ? _defaultTextBodyColor : Color(0xCC646464);
+      ? _defaultTextBodyColor : _defaultTextBodyColor;
 
     _bodyStyle = TextStyle(color: textBodyColor(), fontSize: 14.0, fontFamily: _fontBase, fontWeight: _fontLight);
 

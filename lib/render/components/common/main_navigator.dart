@@ -65,8 +65,8 @@ class MainNavigatorState extends State<_Presenter> {
       child: Scaffold(
         body: PageView(
           controller: _ctrl,
-          physics: AlwaysScrollableScrollPhysics(),
-          onPageChanged: _onPageChanged,
+          physics: BouncingScrollPhysics(),
+          onPageChanged: _onPageChange,
           children: widget.lists.keys.map((id) => TodosScreen(id)).toList(),
         ),
       ),
@@ -89,21 +89,24 @@ class MainNavigatorState extends State<_Presenter> {
     }
   }
 
-  _onPageChanged(int index) {
-    setState(() => _currentIndex = index);
+  _onPageChange(int index) {
+    var history = Queue<int>.from(_history);
+    history.addLast(index);
+    setState(() {
+      _currentIndex = index;
+      _history = history;
+      _lastActionWasGo = true;
+    });
   }
 
   jumpToPage(int index) {
     if (_currentIndex == index) return;
-    var history = Queue<int>.from(_history);
-    history.addLast(index);
-    setState(() {
-      _history = history;
-      _lastActionWasGo = true;
-    });
-    _ctrl.jumpToPage(index);
+    _ctrl.animateToPage(
+      index,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.fastOutSlowIn,
+    );
   }
-
 }
 
 class _Props {

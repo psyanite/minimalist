@@ -7,10 +7,10 @@ import 'package:minimalist/state/app/app_state.dart';
 import 'package:minimalist/state/me/todos/todo_actions.dart';
 import 'package:redux/redux.dart';
 
-class SetListNameDialog extends StatelessWidget {
+class SetListNameScreen extends StatelessWidget {
   final int listId;
 
-  const SetListNameDialog(this.listId, {Key key}) : super(key: key);
+  const SetListNameScreen(this.listId, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,28 +44,36 @@ class _PresenterState extends State<_Presenter> {
 
   @override
   Widget build(BuildContext context) {
-    return ModalWrapper(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30.0),
-          child: Column(children: <Widget>[
-            _nameField(),
-          ]),
-        ),
-        Container(height: 10.0),
-        buttons(),
-      ],
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Header(),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  nameField(),
+                ]),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 50.0, left: 30.0, right: 30.0),
+            child: okButton(),
+          )
+        ],
+      ),
     );
   }
 
-  Widget _nameField() {
+
+  Widget nameField() {
     return Container(
       width: 300.0,
       child: TextField(
-        style: TextStyle(fontSize: 18.0),
+        style: TextStyle(fontSize: 36.0),
         autofocus: true,
-        maxLines: null,
-        keyboardType: TextInputType.multiline,
+        onSubmitted: (text) => submit(),
         onChanged: (text) => setState(() => _name = text),
         decoration: InputDecoration(
           hintText: 'New name',
@@ -78,27 +86,10 @@ class _PresenterState extends State<_Presenter> {
   }
 
   Widget okButton() {
-    return InkWell(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      onTap: () => submit(context),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        child: Text('Save', style: TextStyle(fontWeight: Themer().fontBold(), color: Themer().primaryTextColor())),
-      ),
-    );
+    return BurntButton(text: 'Save', onTap: submit, color: Themer().primaryTextColor());
   }
 
-  Widget buttons() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: Row(mainAxisAlignment: MainAxisAlignment.end,  children: [
-        okButton(),
-      ]),
-    );
-  }
-
-  void submit(BuildContext context) {
+  void submit() {
     widget.setListName(_name ?? '');
     Navigator.of(context).pop();
   }

@@ -33,28 +33,27 @@ class _Presenter extends StatefulWidget {
   final VerticalContentAlign currentVerticalAlign;
   final Function dispatch;
 
-  _Presenter({Key key, this.currentTheme, this.currentFont, this.currentAlign, this.currentVerticalAlign, this.dispatch}) : super(key: key);
+  _Presenter(
+      {Key key, this.currentTheme, this.currentFont, this.currentAlign, this.currentVerticalAlign, this.dispatch})
+      : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
 }
 
 class _PresenterState extends State<_Presenter> {
-
   @override
   Widget build(BuildContext context) {
     var slivers = <Widget>[
       HeaderSliver(title: 'THEME'),
       _controls(),
     ];
-    return Scaffold(body: CustomScrollView(slivers: slivers));
+    return Scaffold(body: CustomScrollView(slivers: slivers, physics: BouncingScrollPhysics()));
   }
 
   Widget _controls() {
     var controlOptions = [
-      _themeControl(),
       _fontControl(),
-      _textAlignControl(),
       _verticalTextAlignControl(),
     ];
 
@@ -62,6 +61,7 @@ class _PresenterState extends State<_Presenter> {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 50.0),
         child: ListView.separated(
+          physics: BouncingScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) => controlOptions[index],
           separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separatorBlue()),
@@ -71,25 +71,6 @@ class _PresenterState extends State<_Presenter> {
     );
   }
 
-  Widget _themeControl() {
-    var dispatch = (value) {
-      Themer().setChosenTheme(value);
-      Themer().updateTheme(context);
-      widget.dispatch(SetThemeChoice(value));
-    };
-    var options = [
-      _SettingOption(ThemeChoice.cyan, 'Color Scheme', 'Changes accent colors', 'Cyan', dispatch, color: Colors.cyan),
-      _SettingOption(ThemeChoice.blue, 'Color Scheme', 'Changes accent colors', 'Blue', dispatch, color: Colors.blue),
-      _SettingOption(ThemeChoice.indigo, 'Color Scheme', 'Changes accent colors', 'Indigo', dispatch,
-        color: Colors.indigo),
-      _SettingOption(ThemeChoice.blueGrey, 'Color Scheme', 'Changes accent colors', 'Blue Grey', dispatch,
-        color: Colors.blueGrey),
-      _SettingOption(ThemeChoice.grey, 'Color Scheme', 'Changes accent colors', 'Grey', dispatch, color: Colors.grey),
-    ];
-    var selected = options.indexWhere((o) => o.value == widget.currentTheme);
-    return _SettingControl(options: options, selected: selected);
-  }
-
   Widget _fontControl() {
     var dispatch = (value) {
       Themer().setChosenFont(value);
@@ -97,25 +78,10 @@ class _PresenterState extends State<_Presenter> {
       widget.dispatch(SetFontChoice(value));
     };
     var options = [
-      _SettingOption(FontChoice.ptSans, 'Font', 'Changes font', 'PT Sans', dispatch),
-      _SettingOption(FontChoice.productSans, 'Font', 'Changes font', 'Product Sans', dispatch),
+      SettingOption(FontChoice.ptSans, 'Font', 'Changes font', 'PT Sans', dispatch),
+      SettingOption(FontChoice.productSans, 'Font', 'Changes font', 'Product Sans', dispatch),
     ];
     var selected = options.indexWhere((o) => o.value == widget.currentFont);
-    return _SettingControl(options: options, selected: selected);
-  }
-
-  Widget _textAlignControl() {
-    var dispatch = (value) {
-      Themer().setContentAlign(value);
-      Themer().updateTheme(context);
-      widget.dispatch(SetContentAlign(value));
-    };
-    var options = [
-      _SettingOption(ContentAlign.left, 'Content Align', 'Aligns todo items', 'Left', dispatch),
-      _SettingOption(ContentAlign.right, 'Content Align', 'Aligns todo items', 'Right', dispatch),
-      _SettingOption(ContentAlign.center, 'Content Align', 'Aligns todo items', 'Center', dispatch),
-    ];
-    var selected = options.indexWhere((o) => o.value == widget.currentAlign);
     return _SettingControl(options: options, selected: selected);
   }
 
@@ -126,16 +92,16 @@ class _PresenterState extends State<_Presenter> {
       widget.dispatch(SetVerticalContentAlign(value));
     };
     var options = [
-      _SettingOption(VerticalContentAlign.top, 'Vertical Content Align', 'Aligns todo items', 'Top', dispatch),
-      _SettingOption(VerticalContentAlign.center, 'Vertical Content Align', 'Aligns todo items', 'Center', dispatch),
-      _SettingOption(VerticalContentAlign.bottom, 'Vertical Content Align', 'Aligns todo items', 'Bottom', dispatch),
+      SettingOption(VerticalContentAlign.top, 'Vertical Content Align', 'Aligns todo items', 'Top', dispatch),
+      SettingOption(VerticalContentAlign.center, 'Vertical Content Align', 'Aligns todo items', 'Center', dispatch),
+      SettingOption(VerticalContentAlign.bottom, 'Vertical Content Align', 'Aligns todo items', 'Bottom', dispatch),
     ];
     var selected = options.indexWhere((o) => o.value == widget.currentVerticalAlign);
     return _SettingControl(options: options, selected: selected);
   }
 }
 
-class _SettingOption {
+class SettingOption {
   final dynamic value;
   final String title;
   final String desc;
@@ -143,23 +109,25 @@ class _SettingOption {
   final Function dispatch;
   final Color color;
 
-  _SettingOption(this.value, this.title, this.desc, this.name, this.dispatch, {this.color});
+  SettingOption(this.value, this.title, this.desc, this.name, this.dispatch, {this.color});
 
   onSelect() => dispatch(value);
 }
 
 class _SettingControl extends StatelessWidget {
-  final List<_SettingOption> options;
+  final List<SettingOption> options;
   final int selected;
 
   const _SettingControl({Key key, this.options, this.selected}) : super(key: key);
 
-  _SettingOption _selectedOption() => options[selected];
+  SettingOption _selectedOption() => options[selected];
 
   @override
   Widget build(BuildContext context) {
     var selectedOption = _selectedOption();
     return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       onTap: () => _showBottomSheet(context),
       child: Container(
         padding: EdgeInsets.only(right: 20.0, top: 30.0, bottom: 30.0),
@@ -174,7 +142,7 @@ class _SettingControl extends StatelessWidget {
     );
   }
 
-  Widget _option(BuildContext context, _SettingOption option) {
+  Widget _option(BuildContext context, SettingOption option) {
     return InkWell(
       splashColor: Themer().splashPrimary(),
       child: Container(
@@ -232,8 +200,8 @@ class _SettingControl extends StatelessWidget {
               InkWell(
                 onTap: () => Navigator.of(context).pop(),
                 child: Container(
-                  child: Text('Cancel', style: TextStyle(color: Themer().hintTextColor())),
-                  padding: EdgeInsets.only(bottom: 10.0)),
+                    child: Text('Cancel', style: TextStyle(color: Themer().hintTextColor())),
+                    padding: EdgeInsets.only(bottom: 10.0)),
               ),
             ],
           ),
@@ -255,9 +223,9 @@ class _Props {
   static _Props fromStore(Store<AppState> store) {
     return _Props(
       dispatch: (action) => store.dispatch(action),
-      currentTheme: store.state.settings.themeChoice,
+      currentTheme: ThemeChoice.blue,
       currentFont: store.state.settings.fontChoice,
-      currentAlign: store.state.settings.contentAlign,
+      currentAlign: ContentAlign.left,
       currentVerticalAlign: store.state.settings.verticalContentAlign,
     );
   }

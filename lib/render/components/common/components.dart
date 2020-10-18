@@ -175,7 +175,7 @@ class BurntButton extends StatelessWidget {
   final IconData icon;
   final double iconSize;
   final String text;
-  final Function onPressed;
+  final Function onTap;
   final double padding;
   final double fontSize;
   final Color color;
@@ -185,7 +185,7 @@ class BurntButton extends StatelessWidget {
     this.icon,
     this.iconSize,
     this.text,
-    this.onPressed,
+    this.onTap,
     this.padding,
     this.fontSize,
     this.color,
@@ -194,7 +194,7 @@ class BurntButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onPressed,
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: padding ?? 20.0),
         decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(2.0)), color: color ?? Themer().primary()),
@@ -414,7 +414,7 @@ class Header extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Container(
-            padding: EdgeInsets.only(left: 30.0, right: 30.0, top: 35.0, bottom: 20.0),
+            padding: EdgeInsets.only(left: 50.0, right: 50.0, top: 35.0, bottom: 20.0),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
               Stack(
                 children: <Widget>[
@@ -428,6 +428,14 @@ class Header extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class CleanScrollBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
   }
 }
 

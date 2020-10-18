@@ -14,7 +14,13 @@ class TodoState {
 
   TodoState.initialState()
       : nextListId = 1,
-        lists = LinkedHashMap.from({0: TodoList(id: 0)});
+        lists = LinkedHashMap.from({
+          0: TodoList(id: 0, name: 'Todo', todos: [
+            TodoItem(title: 'Feed Raptor', createdAt: DateTime.now()),
+            TodoItem(title: 'Get the DeLorean serviced', createdAt: DateTime.now()),
+            TodoItem(title: 'Clean the hyperdrives', createdAt: DateTime.now()),
+          ])
+        });
 
   TodoState copyWith({
     int nextListId,
@@ -52,8 +58,12 @@ class TodoState {
     var clone = cloneLists().values.toList();
     var newList = TodoList(id: nextListId);
     var newIndex = lists.keys.toList().indexOf(afterId) + 1;
-    clone.insert(newIndex, newList);
-    return copyWith(lists: toMap(clone));
+    if (newIndex == lists.length) {
+      clone.add(newList);
+    } else {
+      clone.insert(newIndex, newList);
+    }
+    return copyWith(nextListId: nextListId + 1, lists: toMap(clone));
   }
 
   TodoState deleteTodoList(int listId) {
@@ -67,6 +77,11 @@ class TodoState {
 
   TodoState setTodoListName(int listId, String name) {
     var updatedList = lists[listId].copyWith(name: name);
+    return updateList(listId, updatedList);
+  }
+
+  TodoState setTodoListColor(int listId, TodoListColor color) {
+    var updatedList = lists[listId].copyWith(color: color);
     return updateList(listId, updatedList);
   }
 
@@ -94,9 +109,21 @@ class TodoState {
     return copyWith(lists: clone);
   }
 
-  TodoState updateTodo(int listId, int index, TodoItem todo) {
+  TodoState deleteTodo(int listId, TodoItem todo) {
     var clone = cloneLists();
-    clone[listId] = clone[listId].updateTodo(index, todo);
+    clone[listId] = clone[listId].deleteTodo(todo);
+    return copyWith(lists: clone);
+  }
+
+  TodoState updateTodo(int listId, TodoItem original, TodoItem todo) {
+    var clone = cloneLists();
+    clone[listId] = clone[listId].updateTodo(original, todo);
+    return copyWith(lists: clone);
+  }
+
+  TodoState updateTodoStatus(int listId, TodoItem todo, TodoStatus newStatus) {
+    var clone = cloneLists();
+    clone[listId] = clone[listId].updateTodoStatus(todo, newStatus);
     return copyWith(lists: clone);
   }
 

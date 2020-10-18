@@ -10,8 +10,9 @@ import 'package:redux/redux.dart';
 
 class AddTodoScreen extends StatelessWidget {
   final int listId;
+  final Function onSubmit;
 
-  const AddTodoScreen(this.listId, {Key key}) : super(key: key);
+  const AddTodoScreen(this.listId, this.onSubmit, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class AddTodoScreen extends StatelessWidget {
         return (item) => store.dispatch(AddTodo(listId, item));
       },
       builder: (BuildContext context, Function addTodoItem) {
-        return _Presenter(addTodoItem: addTodoItem);
+        return _Presenter(addTodoItem: addTodoItem, onSubmit: onSubmit);
       },
     );
   }
@@ -28,8 +29,9 @@ class AddTodoScreen extends StatelessWidget {
 
 class _Presenter extends StatefulWidget {
   final Function addTodoItem;
+  final Function onSubmit;
 
-  _Presenter({Key key, this.addTodoItem}) : super(key: key);
+  _Presenter({Key key, this.addTodoItem, this.onSubmit}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
@@ -39,34 +41,59 @@ class _PresenterState extends State<_Presenter> {
   String _title;
   String _desc;
   bool _showDesc = false;
+  FocusNode _descTextFieldFocus;
 
   @override
   initState() {
     super.initState();
+    _descTextFieldFocus = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _descTextFieldFocus.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    var children = [
+      Header(),
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 50.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            titleField(),
+            if (_showDesc) descField(),
+          ],
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 50.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!_showDesc) addDetailsButton(),
+            saveButton(),
+          ],
+        ),
+      )
+    ];
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Header(),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30.0),
+      body: LayoutBuilder(builder: (context, constraint) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraint.maxHeight),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-              titleField(),
-              _showDesc ? descField() : addDetailsButton(),
-            ]),
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: children,
+            ),
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 50.0, left: 30.0, right: 30.0),
-            child: okButton(),
-          )
-        ],
-      ),
+        );
+      }),
     );
   }
 
@@ -75,6 +102,7 @@ class _PresenterState extends State<_Presenter> {
       width: 300.0,
       child: TextField(
         style: TextStyle(fontSize: 36.0),
+        maxLines: null,
         autofocus: true,
         onSubmitted: (text) => submit(),
         onChanged: (text) => setState(() => _title = text),
@@ -92,9 +120,11 @@ class _PresenterState extends State<_Presenter> {
     return Container(
       width: 300.0,
       child: TextField(
+        focusNode: _descTextFieldFocus,
+        scrollPhysics: ClampingScrollPhysics(),
         style: TextStyle(fontSize: 18.0),
-        maxLines: null,
         keyboardType: TextInputType.multiline,
+        maxLines: null,
         onChanged: (text) => setState(() => _desc = text),
         decoration: InputDecoration(
           hintText: 'Add details',
@@ -106,18 +136,24 @@ class _PresenterState extends State<_Presenter> {
     );
   }
 
-  Widget okButton() {
+  Widget saveButton() {
     var color = _title == null ? Themer().lightGrey() : Themer().primaryTextColor();
-    return BurntButton(text: 'Save', onPressed: submit, color: color);
+    return Padding(
+      padding: EdgeInsets.only(bottom: 20.0),
+      child: BurntButton(text: 'Save', onTap: submit, color: color),
+    );
   }
 
   Widget addDetailsButton() {
     return InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
-      onTap: () => setState(() => _showDesc = !_showDesc),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.0),
+      onTap: () => setState(() {
+        _showDesc = !_showDesc;
+        _descTextFieldFocus.requestFocus();
+      }),
+      child: Container(
+        margin: EdgeInsets.only(top: 10.0, bottom: 30.0, right: 50.0),
         child: Text('Add details', style: TextStyle(color: Themer().anchorColor())),
       ),
     );
@@ -125,9 +161,10 @@ class _PresenterState extends State<_Presenter> {
 
   void submit() {
     if (_title != null) {
-      var todoItem = TodoItem(title: _title, desc: _desc);
+      var todoItem = TodoItem(title: _title, desc: _desc, createdAt: DateTime.now());
       widget.addTodoItem(todoItem);
       Navigator.of(context).pop();
+      widget.onSubmit();
     }
   }
 }

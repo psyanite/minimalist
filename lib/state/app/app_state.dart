@@ -12,7 +12,6 @@ class AppState {
         settings = settings ?? SettingsState.initialState();
 
   static AppState rehydrate(dynamic json) {
-    // return AppState();
     if (json == null) return AppState();
     try {
       return AppState(

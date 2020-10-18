@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/models/todo_item.dart';
 import 'package:minimalist/models/todo_list.dart';
 import 'package:minimalist/render/components/common/reorderable_listy.dart';
-import 'package:minimalist/render/components/common/ring_button.dart';
 import 'package:minimalist/render/home/add_todo_screen.dart';
+import 'package:minimalist/render/home/set_list_name_screen.dart';
+import 'package:minimalist/render/home/show_todo_screen.dart';
 import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/render/screens/about_screen.dart';
 import 'package:minimalist/render/screens/theme_screen.dart';
@@ -27,7 +30,6 @@ class TodosScreen extends StatelessWidget {
       converter: (Store<AppState> store) => _Props.fromStore(store, todoListId),
       builder: (BuildContext context, _Props props) {
         return _Presenter(
-          listId: props.todoList.id,
           todoList: props.todoList,
           dispatch: props.dispatch,
         );
@@ -37,33 +39,35 @@ class TodosScreen extends StatelessWidget {
 }
 
 class _Presenter extends StatefulWidget {
-  final int listId;
   final TodoList todoList;
   final Function dispatch;
 
-  _Presenter({Key key, this.listId, this.todoList, this.dispatch}) : super(key: key);
+  _Presenter({Key key, this.todoList, this.dispatch}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
 }
 
 class _PresenterState extends State<_Presenter> {
+  ScrollController _scrollie = ScrollController();
+
+  @override
+  dispose() {
+    _scrollie.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: _drawer(context),
+      endDrawer: drawer(context),
       body: SafeArea(
         child: Container(
           child: Column(
             children: [
-              Container(height: 50.0),
+              Container(height: 30.0),
               _title(),
-              Container(height: 20.0),
-              Flexible(
-                  child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 50.0),
-                child: _todos(),
-              )),
+              Flexible(child: todos()),
             ],
           ),
         ),
@@ -73,18 +77,31 @@ class _PresenterState extends State<_Presenter> {
   }
 
   Widget _title() {
-    return Container(height: 30.0, child: Text(widget.todoList.name, style: Themer().listNameTitleStyle()));
+    return InkWell(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SetListNameScreen(widget.todoList.id))),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 20.0),
+            height: 30.0,
+            child: Text(widget.todoList.name, style: Themer().listNameTitleStyle()),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _bottom() {
     return Container(
-      height: 100.0,
+      height: 120.0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          moreButton(),
-          addButton(),
           settingsButton(),
+          addButton(),
+          moreButton(),
         ],
       ),
     );
@@ -96,17 +113,17 @@ class _PresenterState extends State<_Presenter> {
         showModalBottomSheet(
             context: context,
             builder: (builder) {
-              return MoreDialog(widget.listId, widget.todoList);
+              return MoreDialog(widget.todoList);
             });
       },
       child: Container(
-        height: 100.0,
+        height: 120.0,
         child: Center(
           child: Container(
-            margin: EdgeInsets.only(left: 50.0, right: 10.0),
-            width: 15.0,
-            height: 15.0,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.0), color: Themer().ringColor()),
+            margin: EdgeInsets.only(right: 50.0, left: 10.0),
+            width: 10.0,
+            height: 10.0,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Themer().ringColor()),
           ),
         ),
       ),
@@ -114,9 +131,35 @@ class _PresenterState extends State<_Presenter> {
   }
 
   Widget addButton() {
-    return RingButton(onTap: () {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => AddTodoScreen(widget.listId)));
-    });
+    return InkWell(
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        child: Container(
+          height: 120,
+          padding: EdgeInsets.only(top: 35.0, bottom: 35.0),
+          child: Container(
+              width: 50.0,
+              height: 50.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50.0),
+                border: Border.all(color: Themer().ringColor(), width: 3.0),
+              ),
+              child: Container()),
+        ),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => AddTodoScreen(widget.todoList.id, scrollToTheBottom)));
+        });
+  }
+
+  void scrollToTheBottom() {
+    Timer(
+      Duration(milliseconds: 250),
+      () => _scrollie.animateTo(
+        _scrollie.position.maxScrollExtent,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
   }
 
   Widget settingsButton() {
@@ -124,13 +167,13 @@ class _PresenterState extends State<_Presenter> {
       return InkWell(
         onTap: () => Scaffold.of(context).openEndDrawer(),
         child: Container(
-          height: 100.0,
+          height: 120.0,
           child: Center(
             child: Container(
-              margin: EdgeInsets.only(left: 10.0, right: 50.0),
-              width: 15.0,
-              height: 15.0,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.0), color: Themer().ringColor()),
+              margin: EdgeInsets.only(right: 10.0, left: 50.0),
+              width: 10.0,
+              height: 10.0,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Themer().ringColor()),
             ),
           ),
         ),
@@ -138,7 +181,7 @@ class _PresenterState extends State<_Presenter> {
     });
   }
 
-  Widget _todos() {
+  Widget todos() {
     var columnAlign;
     switch (Themer().verticalContentAlign()) {
       case VerticalContentAlign.top:
@@ -152,17 +195,20 @@ class _PresenterState extends State<_Presenter> {
         break;
     }
 
-    var children = widget.todoList.todos.map((todo) => Container(key: ValueKey(todo), child: TodoCard(todo)));
+    var children = widget.todoList.todos
+        .map((todo) => Container(key: ValueKey(todo), child: TodoCard(widget.todoList.id, todo, widget.todoList.color, widget.dispatch)));
+
     return ReorderableListyView(
+      scrollController: _scrollie,
       children: List<Widget>.from(children),
       columnMainAxisAlignment: columnAlign,
       onReorder: (int oldIndex, int newIndex) {
-        widget.dispatch(ReorderTodo(widget.listId, oldIndex, newIndex));
+        widget.dispatch(ReorderTodo(widget.todoList.id, oldIndex, newIndex));
       },
     );
   }
 
-  Widget _drawer(BuildContext context) {
+  Widget drawer(BuildContext context) {
     return Drawer(
       child: Center(
         child: ListView(padding: EdgeInsets.zero, children: <Widget>[
@@ -205,63 +251,58 @@ class _Props {
 }
 
 class TodoCard extends StatelessWidget {
+  final int listId;
+  final TodoListColor listColor;
   final TodoItem todo;
+  final Function dispatch;
 
-  const TodoCard(this.todo, {Key key}) : super(key: key);
+  const TodoCard(this.listId, this.todo, this.listColor, this.dispatch, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var textColor = todo.status == TodoStatus.standby ? Themer().textBodyColor() : Themer().hintTextColor();
     return InkWell(
-      onTap: () => _showBottomSheet(todo, context),
-      child: Padding(
-        padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            _circle(),
-            Expanded(
-              child: Container(
-                child: Text(todo.title, style: TextStyle(fontSize: 22.0, color: textColor)),
-              ),
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ShowTodoScreen(listId, todo)));
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          circle(),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(top: 12.0, bottom: 12.0, right: 50.0),
+              child: Text(todo.title, style: TextStyle(fontSize: 22.0, color: textColor)),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _circle() {
-    if (todo.status == TodoStatus.standby) {
-      return Container(
-        margin: EdgeInsets.only(right: 30.0, top: 3.0),
-        height: 18.0,
-        width: 18.0,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50.0),
-          border: Border.all(color: Themer().primary(), width: 2.0),
-        ),
-      );
-    } else {
-      return Container(
-        margin: EdgeInsets.only(right: 30.0),
-        height: 18.0,
-        width: 18.0,
-        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50.0)), color: Themer().primary()),
-      );
-    }
-  }
-
-  _showBottomSheet(TodoItem todo, BuildContext context) {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) => _todoBottomSheet(todo, context),
-    );
-  }
-
-  Widget _todoBottomSheet(TodoItem todo, BuildContext context) {
-    return Container(
-      child: Text(todo.title),
+  Widget circle() {
+    Color color = mapTodoListColor(listColor);
+    return InkWell(
+      onTap: () {
+        var newStatus = todo.status == TodoStatus.standby ? TodoStatus.done : TodoStatus.standby;
+        dispatch(UpdateTodoStatus(listId, todo, newStatus));
+      },
+      child: Container(
+        padding: EdgeInsets.only(top: 12.0, bottom: 12.0, left: 40.0, right: 30.0),
+        child: todo.status == TodoStatus.standby
+            ? Container(
+                height: 18.0,
+                width: 18.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.0),
+                  border: Border.all(color: color, width: 2.0),
+                ))
+            : Container(
+                height: 18.0,
+                width: 18.0,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50.0)), color: color)),
+      ),
     );
   }
 }

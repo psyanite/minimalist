@@ -5,17 +5,13 @@ import 'package:minimalist/utils/enum_util.dart';
 
 @immutable
 class SettingsState {
-  final ThemeChoice themeChoice;
   final FontChoice fontChoice;
-  final ContentAlign contentAlign;
   final VerticalContentAlign verticalContentAlign;
 
-  SettingsState({this.themeChoice, this.fontChoice, this.contentAlign, this.verticalContentAlign});
+  SettingsState({this.fontChoice, this.verticalContentAlign});
 
   SettingsState.initialState()
-      : themeChoice = ThemeChoice.blue,
-        fontChoice = FontChoice.ptSans,
-        contentAlign = ContentAlign.left,
+      : fontChoice = FontChoice.ptSans,
         verticalContentAlign = VerticalContentAlign.top;
 
   SettingsState copyWith({
@@ -25,27 +21,21 @@ class SettingsState {
     VerticalContentAlign verticalContentAlign,
   }) {
     return SettingsState(
-      themeChoice: themeChoice ?? this.themeChoice,
       fontChoice: fontChoice ?? this.fontChoice,
-      contentAlign: contentAlign ?? this.contentAlign,
       verticalContentAlign: verticalContentAlign ?? this.verticalContentAlign,
     );
   }
 
   factory SettingsState.rehydrate(Map<String, dynamic> json) {
     return SettingsState(
-      themeChoice: EnumUtil.fromString(ThemeChoice.values, json['themeChoice']),
       fontChoice: EnumUtil.fromString(FontChoice.values, json['fontChoice']),
-      contentAlign: EnumUtil.fromString(ContentAlign.values, json['contentAlign']),
       verticalContentAlign: EnumUtil.fromString(VerticalContentAlign.values, json['verticalContentAlign']),
     );
   }
 
   Map<String, dynamic> toPersist() {
     return <String, dynamic>{
-      'themeChoice': EnumUtil.format(this.themeChoice.toString()),
       'fontChoice': EnumUtil.format(this.fontChoice.toString()),
-      'contentAlign': EnumUtil.format(this.contentAlign.toString()),
       'verticalContentAlign': EnumUtil.format(this.verticalContentAlign.toString()),
     };
   }
