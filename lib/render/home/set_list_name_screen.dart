@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/models/todo_list.dart';
 import 'package:minimalist/render/components/common/components.dart';
 import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/state/app/app_state.dart';
@@ -8,15 +9,15 @@ import 'package:minimalist/state/me/todos/todo_actions.dart';
 import 'package:redux/redux.dart';
 
 class SetListNameScreen extends StatelessWidget {
-  final int listId;
+  final TodoList todoList;
 
-  const SetListNameScreen(this.listId, {Key key}) : super(key: key);
+  const SetListNameScreen(this.todoList, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, Function>(
       converter: (Store<AppState> store) {
-        return (name) => store.dispatch(SetTodoListName(listId, name));
+        return (name) => store.dispatch(UpdateTodoList(todoList.copyWith(name: name)));
       },
       builder: (BuildContext context, Function setListName) {
         return _Presenter(setListName: setListName);
@@ -36,11 +37,6 @@ class _Presenter extends StatefulWidget {
 
 class _PresenterState extends State<_Presenter> {
   String _name;
-
-  @override
-  initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

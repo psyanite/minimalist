@@ -1,26 +1,44 @@
 import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
 
-class SetThemeChoice {
-  final ThemeChoice choice;
+class SetDarkModeChoice {
+  final DarkModeChoice v;
 
-  SetThemeChoice(this.choice);
+  SetDarkModeChoice(this.v);
+}
+
+class SetThemeChoice {
+  final ThemeChoice v;
+
+  SetThemeChoice(this.v);
 }
 
 class SetFontChoice {
-  final FontChoice choice;
+  final FontChoice v;
 
-  SetFontChoice(this.choice);
+  SetFontChoice(this.v);
 }
 
 class SetContentAlign {
-  final ContentAlign align;
+  final ContentAlign v;
 
-  SetContentAlign(this.align);
+  SetContentAlign(this.v);
 }
 
 class SetVerticalContentAlign {
-  final VerticalContentAlign align;
+  final VerticalContentAlign v;
 
-  SetVerticalContentAlign(this.align);
+  SetVerticalContentAlign(this.v);
+}
+
+class SetAutoDeleteDoneItems {
+  final bool v;
+
+  SetAutoDeleteDoneItems(this.v);
+}
+
+class SetMoveDoneItemsToTheBottom {
+  final bool v;
+
+  SetMoveDoneItemsToTheBottom(this.v);
 }

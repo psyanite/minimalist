@@ -8,17 +8,20 @@ import 'package:minimalist/state/settings/settings_actions.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
 import 'package:redux/redux.dart';
 
-class ThemeScreen extends StatelessWidget {
+class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _Props>(
       converter: _Props.fromStore,
       builder: (BuildContext context, _Props props) {
         return _Presenter(
+          darkModeChoice: props.darkModeChoice,
           currentTheme: props.currentTheme,
           currentFont: props.currentFont,
           currentAlign: props.currentAlign,
           currentVerticalAlign: props.currentVerticalAlign,
+          autoDeleteDoneItems: props.autoDeleteDoneItems,
+          moveDoneItemsToTheBottom: props.moveDoneItemsToTheBottom,
           dispatch: props.dispatch,
         );
       },
@@ -27,14 +30,25 @@ class ThemeScreen extends StatelessWidget {
 }
 
 class _Presenter extends StatefulWidget {
+  final DarkModeChoice darkModeChoice;
   final ThemeChoice currentTheme;
   final FontChoice currentFont;
   final ContentAlign currentAlign;
   final VerticalContentAlign currentVerticalAlign;
+  final bool autoDeleteDoneItems;
+  final bool moveDoneItemsToTheBottom;
   final Function dispatch;
 
   _Presenter(
-      {Key key, this.currentTheme, this.currentFont, this.currentAlign, this.currentVerticalAlign, this.dispatch})
+      {Key key,
+      this.darkModeChoice,
+      this.currentTheme,
+      this.currentFont,
+      this.currentAlign,
+      this.currentVerticalAlign,
+      this.autoDeleteDoneItems,
+      this.moveDoneItemsToTheBottom,
+      this.dispatch})
       : super(key: key);
 
   @override
@@ -45,16 +59,19 @@ class _PresenterState extends State<_Presenter> {
   @override
   Widget build(BuildContext context) {
     var slivers = <Widget>[
-      HeaderSliver(title: 'THEME'),
-      _controls(),
+      HeaderSliver(title: 'SETTINGS'),
+      controls(),
     ];
     return Scaffold(body: CustomScrollView(slivers: slivers, physics: BouncingScrollPhysics()));
   }
 
-  Widget _controls() {
+  Widget controls() {
     var controlOptions = [
-      _fontControl(),
-      _verticalTextAlignControl(),
+      darkModeControl(),
+      fontControl(),
+      verticalTextAlignControl(),
+      autoDeleteDoneItemsControl(),
+      moveDoneItemsToTheBottom(),
     ];
 
     return SliverToBoxAdapter(
@@ -71,21 +88,35 @@ class _PresenterState extends State<_Presenter> {
     );
   }
 
-  Widget _fontControl() {
+  Widget darkModeControl() {
+    var dispatch = (value) {
+      Themer().setDarkModeChoice(value);
+      widget.dispatch(SetDarkModeChoice(value));
+    };
+    var options = [
+      SettingOption(DarkModeChoice.auto, 'Dark Mode', null, 'Automatically enable when dark mode on this device is enabled', dispatch),
+      SettingOption(DarkModeChoice.always, 'Dark Mode', null, 'Always use dark mode', dispatch),
+      SettingOption(DarkModeChoice.never, 'Dark Mode', null, 'Never use dark mode', dispatch),
+    ];
+    var selected = options.indexWhere((o) => o.value == DarkModeChoice.auto);
+    return _SettingControl(options: options, selected: selected);
+  }
+
+  Widget fontControl() {
     var dispatch = (value) {
       Themer().setChosenFont(value);
       Themer().updateTheme(context);
       widget.dispatch(SetFontChoice(value));
     };
     var options = [
-      SettingOption(FontChoice.ptSans, 'Font', 'Changes font', 'PT Sans', dispatch),
-      SettingOption(FontChoice.productSans, 'Font', 'Changes font', 'Product Sans', dispatch),
+      SettingOption(FontChoice.ptSans, 'Font', null, 'PT Sans', dispatch),
+      SettingOption(FontChoice.productSans, 'Font', null, 'Product Sans', dispatch),
     ];
     var selected = options.indexWhere((o) => o.value == widget.currentFont);
     return _SettingControl(options: options, selected: selected);
   }
 
-  Widget _verticalTextAlignControl() {
+  Widget verticalTextAlignControl() {
     var dispatch = (value) {
       Themer().setVerticalContentAlign(value);
       Themer().updateTheme(context);
@@ -98,6 +129,30 @@ class _PresenterState extends State<_Presenter> {
     ];
     var selected = options.indexWhere((o) => o.value == widget.currentVerticalAlign);
     return _SettingControl(options: options, selected: selected);
+  }
+
+  Widget autoDeleteDoneItemsControl() {
+    return _SettingSwitch(
+      current: widget.autoDeleteDoneItems,
+      title: 'Auto Delete Done Items',
+      desc: 'Automatically delete items from list when they are marked as done',
+      onTap: (value) {
+        Themer().setAutoDeleteDoneItems(value);
+        widget.dispatch(SetAutoDeleteDoneItems(value));
+      },
+    );
+  }
+
+  Widget moveDoneItemsToTheBottom() {
+    return _SettingSwitch(
+      current: widget.moveDoneItemsToTheBottom,
+      title: 'Move Done Items to the Bottom',
+      desc: 'Automatically move done items to the bottom of the list when they are marked as done.',
+      onTap: (value) {
+        Themer().setMoveDoneItemsToTheBottom(value);
+        widget.dispatch(SetMoveDoneItemsToTheBottom(value));
+      },
+    );
   }
 }
 
@@ -118,7 +173,7 @@ class _SettingControl extends StatelessWidget {
   final List<SettingOption> options;
   final int selected;
 
-  const _SettingControl({Key key, this.options, this.selected}) : super(key: key);
+  _SettingControl({Key key, this.options, this.selected}) : super(key: key);
 
   SettingOption _selectedOption() => options[selected];
 
@@ -130,7 +185,7 @@ class _SettingControl extends StatelessWidget {
       highlightColor: Colors.transparent,
       onTap: () => _showBottomSheet(context),
       child: Container(
-        padding: EdgeInsets.only(right: 20.0, top: 30.0, bottom: 30.0),
+        padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -146,23 +201,15 @@ class _SettingControl extends StatelessWidget {
     return InkWell(
       splashColor: Themer().splashPrimary(),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8.0),
-        height: 40.0,
+        margin: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(option.name, style: TextStyle(color: Themer().anchorColor())),
-            if (option.color != null)
-              Container(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Container(
-                  height: 20.0,
-                  width: 20.0,
-                  decoration: BoxDecoration(color: option.color, borderRadius: BorderRadius.circular(20.0)),
-                ),
-              )
+            Expanded(
+              child: Text(option.name, textAlign: TextAlign.center, style: TextStyle(color: Themer().anchorColor())),
+            ),
           ],
         ),
       ),
@@ -186,8 +233,11 @@ class _SettingControl extends StatelessWidget {
               Container(height: 5.0),
               Text(selectedOption.title, style: TextStyle(fontSize: 22.0, fontWeight: Themer().fontBold())),
               Container(height: 10.0),
-              Text(selectedOption.desc),
-              Container(height: 15.0),
+              if (selectedOption.desc != null)
+                Container(
+                  margin: EdgeInsets.only(left: 30.0, right: 30.0, bottom: 15.0),
+                  child: Text(selectedOption.desc, textAlign: TextAlign.center),
+                ),
               Container(
                 child: ListView.separated(
                   shrinkWrap: true,
@@ -199,9 +249,7 @@ class _SettingControl extends StatelessWidget {
               Container(height: 20.0),
               InkWell(
                 onTap: () => Navigator.of(context).pop(),
-                child: Container(
-                    child: Text('Cancel', style: TextStyle(color: Themer().hintTextColor())),
-                    padding: EdgeInsets.only(bottom: 10.0)),
+                child: Container(child: Text('Cancel', style: TextStyle(color: Themer().hintTextColor())), padding: EdgeInsets.only(bottom: 10.0)),
               ),
             ],
           ),
@@ -211,22 +259,73 @@ class _SettingControl extends StatelessWidget {
   }
 }
 
+class _SettingSwitch extends StatelessWidget {
+  final bool current;
+  final String title;
+  final String desc;
+  final Function onTap;
+
+  _SettingSwitch({Key key, this.current, this.title, this.desc, this.onTap}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: TextStyle(fontSize: 22.0, fontWeight: Themer().fontBold())),
+                Text(desc),
+              ],
+            ),
+          ),
+          CupertinoSwitch(
+            value: current,
+            activeColor: Color(0xFF64D2FF),
+            onChanged: (bool value) {
+              onTap(value);
+            },
+          )
+        ],
+      ),
+    );
+  }
+}
+
 class _Props {
+  final DarkModeChoice darkModeChoice;
   final ThemeChoice currentTheme;
   final FontChoice currentFont;
   final ContentAlign currentAlign;
   final VerticalContentAlign currentVerticalAlign;
+  final bool autoDeleteDoneItems;
+  final bool moveDoneItemsToTheBottom;
   final Function dispatch;
 
-  _Props({this.currentTheme, this.currentFont, this.currentAlign, this.currentVerticalAlign, this.dispatch});
+  _Props(
+      {this.darkModeChoice,
+      this.currentTheme,
+      this.currentFont,
+      this.currentAlign,
+      this.currentVerticalAlign,
+      this.autoDeleteDoneItems,
+      this.moveDoneItemsToTheBottom,
+      this.dispatch});
 
   static _Props fromStore(Store<AppState> store) {
     return _Props(
       dispatch: (action) => store.dispatch(action),
+      darkModeChoice: store.state.settings.darkModeChoice,
       currentTheme: ThemeChoice.blue,
       currentFont: store.state.settings.fontChoice,
       currentAlign: ContentAlign.left,
       currentVerticalAlign: store.state.settings.verticalContentAlign,
+      autoDeleteDoneItems: store.state.settings.autoDeleteDoneItems,
+      moveDoneItemsToTheBottom: store.state.settings.moveDoneItemsToTheBottom,
     );
   }
 }

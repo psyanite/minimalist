@@ -31,7 +31,7 @@ class MultiSelectDialog extends StatelessWidget {
           Container(
             child: ListView.separated(
               shrinkWrap: true,
-              itemBuilder: (context, index) => _option(options[index]),
+              itemBuilder: (context, index) => option(options[index]),
               separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separatorBlue()),
               itemCount: options.length,
             ),
@@ -49,7 +49,7 @@ class MultiSelectDialog extends StatelessWidget {
     );
   }
 
-  Widget _option(MultiSelectDialogOption option) {
+  Widget option(MultiSelectDialogOption option) {
     return Builder(
         builder: (context) {
         return InkWell(

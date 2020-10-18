@@ -46,10 +46,6 @@ class AboutScreen extends StatelessWidget {
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
         Container(padding: EdgeInsets.only(top: 25.0, left: 15.0, bottom: 10.0), child: Text('ABOUT', style: Themer().appBarTitleStyle())),
         ListTile(
-          title: Text('Contact Us', style: TextStyle(fontSize: 18.0)),
-          onTap: () => launch(Utils.buildEmail('', '(insert-your-query-here)')),
-        ),
-        ListTile(
           title: Text('Report an Issue', style: TextStyle(fontSize: 18.0)),
           onTap: () => _reportAnIssue(),
         ),

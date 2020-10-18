@@ -5,19 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/models/todo_item.dart';
 import 'package:minimalist/models/todo_list.dart';
+import 'package:minimalist/render/components/common/clap.dart';
 import 'package:minimalist/render/components/common/reorderable_listy.dart';
+import 'package:minimalist/render/components/dialog/bottom_modal.dart';
+import 'package:minimalist/render/components/dialog/multi_select_dialog.dart';
 import 'package:minimalist/render/home/add_todo_screen.dart';
+import 'package:minimalist/render/home/more_dialog.dart';
 import 'package:minimalist/render/home/set_list_name_screen.dart';
 import 'package:minimalist/render/home/show_todo_screen.dart';
 import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/render/screens/about_screen.dart';
-import 'package:minimalist/render/screens/theme_screen.dart';
+import 'package:minimalist/render/screens/settings_screen.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:minimalist/state/me/todos/todo_actions.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
+import 'package:minimalist/utils/general_utils.dart';
 import 'package:redux/redux.dart';
-
-import 'more_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TodosScreen extends StatelessWidget {
   final int todoListId;
@@ -60,40 +64,43 @@ class _PresenterState extends State<_Presenter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: drawer(context),
       body: SafeArea(
         child: Container(
           child: Column(
             children: [
-              Container(height: 30.0),
-              _title(),
+              Container(height: 50.0),
+              title(),
+              Container(height: 20.0),
               Flexible(child: todos()),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _bottom(),
+      bottomNavigationBar: bottom(),
     );
   }
 
-  Widget _title() {
+  Widget title() {
     return InkWell(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SetListNameScreen(widget.todoList.id))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 20.0),
-            height: 30.0,
-            child: Text(widget.todoList.name, style: Themer().listNameTitleStyle()),
-          )
-        ],
-      ),
-    );
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SetListNameScreen(widget.todoList))),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 30.0),
+              height: 30.0,
+              child: Text(widget.todoList.name, style: Themer().listNameTitleStyle()),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 30.0),
+              child: Clap(widget.todoList.id, mapTodoListColor(widget.todoList.color)),
+            ),
+          ],
+        ));
   }
 
-  Widget _bottom() {
+  Widget bottom() {
     return Container(
       height: 120.0,
       child: Row(
@@ -112,7 +119,7 @@ class _PresenterState extends State<_Presenter> {
       onTap: () {
         showModalBottomSheet(
             context: context,
-            builder: (builder) {
+            builder: (context) {
               return MoreDialog(widget.todoList);
             });
       },
@@ -120,7 +127,7 @@ class _PresenterState extends State<_Presenter> {
         height: 120.0,
         child: Center(
           child: Container(
-            margin: EdgeInsets.only(right: 50.0, left: 10.0),
+            margin: EdgeInsets.only(right: 50.0, left: 20.0),
             width: 10.0,
             height: 10.0,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Themer().ringColor()),
@@ -165,12 +172,16 @@ class _PresenterState extends State<_Presenter> {
   Widget settingsButton() {
     return Builder(builder: (context) {
       return InkWell(
-        onTap: () => Scaffold.of(context).openEndDrawer(),
+        onTap: () {
+          showModalBottomSheet(context: context, builder: (context) {
+            return drawer();
+          });
+        },
         child: Container(
           height: 120.0,
           child: Center(
             child: Container(
-              margin: EdgeInsets.only(right: 10.0, left: 50.0),
+              margin: EdgeInsets.only(right: 20.0, left: 50.0),
               width: 10.0,
               height: 10.0,
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Themer().ringColor()),
@@ -208,28 +219,23 @@ class _PresenterState extends State<_Presenter> {
     );
   }
 
-  Widget drawer(BuildContext context) {
-    return Drawer(
-      child: Center(
-        child: ListView(padding: EdgeInsets.zero, children: <Widget>[
-          Container(height: 500),
-          ListTile(
-            title: Text('Theme', style: TextStyle(fontSize: 22.0)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => ThemeScreen()));
-            },
-          ),
-          ListTile(
-            title: Text('About', style: TextStyle(fontSize: 22.0)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => AboutScreen()));
-            },
-          ),
-        ]),
-      ),
-    );
+  Widget drawer() {
+    var options = [
+      BottomModalOption(MultiSelectDialogOption(title: 'Settings', onTap: () {
+        Navigator.pop(context);
+        Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen()));
+      })),
+      BottomModalOption(MultiSelectDialogOption(title: 'Contact Us', onTap: () {
+        Navigator.pop(context);
+        launch(Utils.buildEmail('', '(insert-your-query-here)'));
+      })),
+      BottomModalOption(MultiSelectDialogOption(title: 'About', onTap: () {
+        Navigator.pop(context);
+        Navigator.push(context, MaterialPageRoute(builder: (_) => AboutScreen()));
+      })),
+    ];
+
+    return BottomModal(options);
   }
 }
 
@@ -297,11 +303,7 @@ class TodoCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50.0),
                   border: Border.all(color: color, width: 2.0),
                 ))
-            : Container(
-                height: 18.0,
-                width: 18.0,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50.0)), color: color)),
+            : Container(height: 18.0, width: 18.0, decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50.0)), color: color)),
       ),
     );
   }

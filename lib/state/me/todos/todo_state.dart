@@ -15,10 +15,13 @@ class TodoState {
   TodoState.initialState()
       : nextListId = 1,
         lists = LinkedHashMap.from({
-          0: TodoList(id: 0, name: 'Todo', todos: [
-            TodoItem(title: 'Feed Raptor', createdAt: DateTime.now()),
-            TodoItem(title: 'Get the DeLorean serviced', createdAt: DateTime.now()),
-            TodoItem(title: 'Clean the hyperdrives', createdAt: DateTime.now()),
+          0: TodoList(id: 0, name: 'todo', todos: [
+            TodoItem(title: 'shop for a new cape', createdAt: DateTime.now()),
+            TodoItem(title: 'get pedicure', createdAt: DateTime.now()),
+            TodoItem(title: 'service the batmobile', createdAt: DateTime.now()),
+            TodoItem(title: 'call robin', createdAt: DateTime.now()),
+            TodoItem(title: 'make reservation', createdAt: DateTime.now()),
+            TodoItem(title: 'buy flowers', createdAt: DateTime.now()),
           ])
         });
 
@@ -48,15 +51,15 @@ class TodoState {
     };
   }
 
-  TodoState updateList(int listId, TodoList list) {
+  TodoState updateList(TodoList list) {
     var clone = cloneLists();
-    clone[listId] = list;
+    clone[list.id] = list;
     return copyWith(lists: clone);
   }
 
   TodoState createNewTodoList(int afterId) {
     var clone = cloneLists().values.toList();
-    var newList = TodoList(id: nextListId);
+    var newList = TodoList(id: nextListId, name: 'todo');
     var newIndex = lists.keys.toList().indexOf(afterId) + 1;
     if (newIndex == lists.length) {
       clone.add(newList);
@@ -73,16 +76,6 @@ class TodoState {
       lists[0] = TodoList(id: 0);
     }
     return copyWith(lists: clone);
-  }
-
-  TodoState setTodoListName(int listId, String name) {
-    var updatedList = lists[listId].copyWith(name: name);
-    return updateList(listId, updatedList);
-  }
-
-  TodoState setTodoListColor(int listId, TodoListColor color) {
-    var updatedList = lists[listId].copyWith(color: color);
-    return updateList(listId, updatedList);
   }
 
   TodoState reorderList(int curIndex, int newIndex) {

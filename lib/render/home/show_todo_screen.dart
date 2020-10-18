@@ -156,15 +156,14 @@ class _PresenterState extends State<_Presenter> {
           children: [
             Text(
               'created ${TimeUtil.format(widget.todo.createdAt)}',
-              style: TextStyle(color: Themer().hintTextColor()),
-            ),
+              style: TextStyle(color: Themer().hintTextColor()),),
             _showDesc ? deleteDetailsButton() : addDetailsButton(),
           ],
         ),
         InkWell(
           onTap: showDeleteDialog,
           child: Container(
-              margin: EdgeInsets.only(bottom: 30.0, left: 20.0),
+              margin: EdgeInsets.only(top: 30.0, bottom: 20.0, left: 20.0),
               child: Icon(Icons.delete_outline, color: Themer().hintTextColor())),
         )
       ],

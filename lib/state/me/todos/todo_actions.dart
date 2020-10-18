@@ -1,4 +1,4 @@
-import 'package:minimalist/models/todo_item.dart';
+  import 'package:minimalist/models/todo_item.dart';
 import 'package:minimalist/models/todo_list.dart';
 
 class CreateNewTodoList {
@@ -7,24 +7,16 @@ class CreateNewTodoList {
   CreateNewTodoList(this.afterId);
 }
 
+class UpdateTodoList {
+  final TodoList list;
+
+  UpdateTodoList(this.list);
+}
+
 class DeleteTodoList {
   final int listId;
 
   DeleteTodoList(this.listId);
-}
-
-class SetTodoListName {
-  final int listId;
-  final String name;
-
-  SetTodoListName(this.listId, this.name);
-}
-
-class SetTodoListColor {
-  final int listId;
-  final TodoListColor color;
-
-  SetTodoListColor(this.listId, this.color);
 }
 
 class ReorderList {

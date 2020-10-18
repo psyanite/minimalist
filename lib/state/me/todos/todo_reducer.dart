@@ -5,9 +5,8 @@ import 'todo_state.dart';
 
 Reducer<TodoState> todoReducer = combineReducers([
   new TypedReducer<TodoState, CreateNewTodoList>(createNewTodoList),
+  new TypedReducer<TodoState, UpdateTodoList>(updateTodoList),
   new TypedReducer<TodoState, DeleteTodoList>(deleteTodoList),
-  new TypedReducer<TodoState, SetTodoListName>(setTodoListName),
-  new TypedReducer<TodoState, SetTodoListColor>(setTodoListColor),
   new TypedReducer<TodoState, ReorderList>(reorderList),
   new TypedReducer<TodoState, AddTodo>(addTodo),
   new TypedReducer<TodoState, DeleteTodo>(deleteTodo),
@@ -20,16 +19,12 @@ TodoState createNewTodoList(TodoState state, CreateNewTodoList action) {
   return state.createNewTodoList(action.afterId);
 }
 
+TodoState updateTodoList(TodoState state, UpdateTodoList action) {
+  return state.updateList(action.list);
+}
+
 TodoState deleteTodoList(TodoState state, DeleteTodoList action) {
   return state.deleteTodoList(action.listId);
-}
-
-TodoState setTodoListName(TodoState state, SetTodoListName action) {
-  return state.setTodoListName(action.listId, action.name);
-}
-
-TodoState setTodoListColor(TodoState state, SetTodoListColor action) {
-  return state.setTodoListColor(action.listId, action.color);
 }
 
 TodoState reorderList(TodoState state, ReorderList action) {

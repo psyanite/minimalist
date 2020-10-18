@@ -10,6 +10,8 @@ Make lists that actually enable you to GET THINGS DONE!
 ## Todo
 * Package app for release
 * Upload to Google Play Store
+* Hide counter
+* Add "Contact Us" on the left-hand bar
 
 ## Done
 * Implement todo lists

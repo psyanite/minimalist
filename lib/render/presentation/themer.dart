@@ -7,45 +7,61 @@ import '../../main.dart';
 class Themer {
   static final Themer _singleton = Themer._internal();
 
+  Themer._internal();
+
+  init(SettingsState settings) {
+    _chosenFont = settings.fontChoice;
+    _chosenVerticalContentAlign = settings.verticalContentAlign;
+    _autoDeleteDoneItems = settings.autoDeleteDoneItems;
+    _moveDoneItemsToTheBottom = settings.moveDoneItemsToTheBottom;
+    _darkModeChoice = settings.darkModeChoice;
+    _refresh();
+  }
+
+
   static ThemeChoice _chosenTheme = ThemeChoice.blue;
   static Color _mainColor = Colors.blue;
+  setChosenTheme(ThemeChoice v) {
+    _chosenTheme = v;
+    _refresh();
+  }
 
   static FontChoice _chosenFont = FontChoice.ptSans;
   static String _mainFont = 'ptsans';
+  setChosenFont(FontChoice v) {
+    _chosenFont = v;
+    _refresh();
+  }
 
   static ContentAlign _chosenContentAlign = ContentAlign.center;
-  static VerticalContentAlign _chosenVerticalContentAlign = VerticalContentAlign.top;
-
-  Themer._internal();
-
-  // Setup
-
-  init(ThemeChoice theme, FontChoice font, ContentAlign contentAlign) {
-    _chosenTheme = theme;
-    _chosenFont = font;
-    _chosenContentAlign = contentAlign;
-    _refresh();
-  }
-
-  setChosenTheme(ThemeChoice theme) {
-    _chosenTheme = theme;
-    _refresh();
-  }
-
-  setChosenFont(FontChoice font) {
-    _chosenFont = font;
-    _refresh();
-  }
-
-  setContentAlign(ContentAlign contentAlign) {
-    _chosenContentAlign = contentAlign;
+  setContentAlign(ContentAlign v) {
+    _chosenContentAlign = v;
   }
   contentAlign() => _chosenContentAlign;
 
-  setVerticalContentAlign(VerticalContentAlign contentAlign) {
-    _chosenVerticalContentAlign = contentAlign;
+  static VerticalContentAlign _chosenVerticalContentAlign = VerticalContentAlign.top;
+  setVerticalContentAlign(VerticalContentAlign v) {
+    _chosenVerticalContentAlign = v;
   }
   verticalContentAlign() => _chosenVerticalContentAlign;
+
+  static bool _autoDeleteDoneItems = false;
+  setAutoDeleteDoneItems(bool v) {
+    _autoDeleteDoneItems = v;
+  }
+  autoDeleteDoneItems() => _autoDeleteDoneItems;
+
+  static bool _moveDoneItemsToTheBottom = false;
+  setMoveDoneItemsToTheBottom(bool v) {
+    _moveDoneItemsToTheBottom = v;
+  }
+  moveDoneItemsToTheBottom() => _moveDoneItemsToTheBottom;
+
+  static DarkModeChoice _darkModeChoice = DarkModeChoice.auto;
+  setDarkModeChoice(DarkModeChoice v) {
+    _darkModeChoice = v;
+  }
+  darkModeChoice() => _darkModeChoice;
 
 
   /// Colors
@@ -146,7 +162,8 @@ class Themer {
       letterSpacing: 3.0);
   appBarTitleStyle() => _appBarTitleStyle;
 
-  TextStyle _listNameTitleStyle = TextStyle(fontSize: 30.0, fontWeight: _defaultFontBold);
+  TextStyle _listNameTitleStyle =
+    TextStyle(fontSize: 30.0, letterSpacing: 1.0);
   listNameTitleStyle() => _listNameTitleStyle;
 
   /// Gradients
@@ -244,6 +261,6 @@ class Themer {
   }
 }
 
+enum DarkModeChoice { auto, always, never }
 enum ThemeChoice { cyan, indigo, blue, blueGrey, grey }
-
 enum FontChoice { ptSans, productSans }

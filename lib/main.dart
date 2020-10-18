@@ -55,13 +55,21 @@ class MainRoutes {
   static const String home = '/';
 }
 
-class Main extends StatelessWidget {
-  final store;
+class Main extends StatefulWidget {
+  final Store store;
 
   Main({this.store});
 
   @override
-  Widget build(BuildContext context) {
+  _MainState createState() => _MainState();
+}
+
+class _MainState extends State<Main> {
+
+  @override
+  initState() {
+    super.initState();
+
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: Color(0xFFEEEEEE),
       systemNavigationBarDividerColor: null,
@@ -71,27 +79,42 @@ class Main extends StatelessWidget {
       statusBarBrightness: Brightness.light,
     ));
 
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    Future.delayed(Duration.zero, () async {
+      Themer().updateTheme(context);
+    });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return StoreProvider<AppState>(
-      store: store,
-      child: MaterialApp(
-        title: 'Burntoast',
-        debugShowCheckedModeBanner: false,
-        color: Color(0xFFF2993E),
-        theme: themeNotifier.getTheme(),
-        initialRoute: MainRoutes.home,
-        routes: <String, WidgetBuilder>{
-          MainRoutes.home: (context) => MainNavigator(),
-        },
-        builder: (context, child) {
-          var currentTsf = MediaQuery.of(context).textScaleFactor;
-          var newTsf = -0.25 * currentTsf + 1;
-          return MediaQuery(
-            child: child,
-            data: MediaQuery.of(context).copyWith(textScaleFactor: newTsf),
-          );
-        },
+      store: widget.store,
+      child: StoreConnector<AppState, int>(
+          onInit: (Store<AppState> store) async {
+            Themer().init(store.state.settings);
+          },
+          converter: (Store<AppState> store) => 1,
+          builder: (BuildContext context, int props) {
+            final themeNotifier = Provider.of<ThemeNotifier>(context);
+
+            return MaterialApp(
+              title: 'Burntoast',
+              debugShowCheckedModeBanner: false,
+              color: Color(0xFFF2993E),
+              theme: themeNotifier.getTheme(),
+              initialRoute: MainRoutes.home,
+              routes: <String, WidgetBuilder>{
+                MainRoutes.home: (context) => MainNavigator(),
+              },
+              builder: (context, child) {
+                var currentTsf = MediaQuery.of(context).textScaleFactor;
+                var newTsf = -0.25 * currentTsf + 1;
+                return MediaQuery(
+                  child: child,
+                  data: MediaQuery.of(context).copyWith(textScaleFactor: newTsf),
+                );
+              },
+            );
+          }
       ),
     );
   }

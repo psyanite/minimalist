@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/models/todo_item.dart';
 import 'package:minimalist/models/todo_list.dart';
+import 'package:minimalist/render/components/dialog/bottom_modal.dart';
 import 'package:minimalist/render/components/dialog/confirm.dart';
 import 'package:minimalist/render/components/dialog/dialog.dart';
 import 'package:minimalist/render/components/dialog/multi_select_dialog.dart';
-import 'package:minimalist/render/home/set_list_name_screen.dart';
-import 'package:minimalist/render/presentation/themer.dart';
-import 'package:minimalist/render/screens/theme_screen.dart';
+import 'package:minimalist/render/home/customise_list_dialog.dart';
 import 'package:minimalist/services/navi.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:minimalist/state/me/todos/todo_actions.dart';
@@ -42,8 +42,7 @@ class _Presenter extends StatefulWidget {
   final List<int> positionOptions;
   final Function dispatch;
 
-  const _Presenter({Key key, this.todoList, this.curIndex, this.positionOptions, this.dispatch})
-      : super(key: key);
+  const _Presenter({Key key, this.todoList, this.curIndex, this.positionOptions, this.dispatch}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
@@ -55,39 +54,14 @@ class _PresenterState extends State<_Presenter> {
   @override
   Widget build(BuildContext context) {
     var options = [
-      _addListLoading ? loadingIcon() : option(MultiSelectDialogOption(title: 'Add list', onTap: addList)),
-      option(MultiSelectDialogOption(title: 'Set list name', onTap: setListName)),
-      option(MultiSelectDialogOption(title: 'Set accent color', onTap: setColor)),
-      option(MultiSelectDialogOption(title: 'Move list', onTap: moveList)),
-      option(MultiSelectDialogOption(title: 'Delete list', onTap: deleteList)),
+      _addListLoading ? loadingIcon() : BottomModalOption(MultiSelectDialogOption(title: 'Add new list', onTap: addList)),
+      BottomModalOption(MultiSelectDialogOption(title: 'Customise list', onTap: showCustomiseListDialog)),
+      BottomModalOption(MultiSelectDialogOption(title: 'Delete done items', onTap: deleteDoneItems)),
+      BottomModalOption(MultiSelectDialogOption(title: 'Move list', onTap: moveList)),
+      BottomModalOption(MultiSelectDialogOption(title: 'Delete list', onTap: deleteList)),
     ];
 
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 20.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(height: 5.0),
-          Container(
-            child: ListView.separated(
-              physics: BouncingScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (context, index) => options[index],
-              separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separatorBlue()),
-              itemCount: options.length,
-            ),
-          ),
-          Container(height: 20.0),
-          InkWell(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              child: Text('Cancel', style: TextStyle(color: Themer().hintTextColor())),
-              padding: EdgeInsets.only(bottom: 10.0),
-            ),
-          ),
-        ],
-      ),
-    );
+    return BottomModal(options);
   }
 
   Widget loadingIcon() {
@@ -103,15 +77,17 @@ class _PresenterState extends State<_Presenter> {
     );
   }
 
-  void setListName() {
+  void showCustomiseListDialog() {
     Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (_) => SetListNameScreen(widget.todoList.id)));
+    showModalBottomSheet(context: context, builder: (context) {
+      return CustomiseListDialog(widget.todoList);
+    });
   }
 
   void addList() {
     widget.dispatch(CreateNewTodoList(widget.todoList.id));
     setState(() => _addListLoading = true);
-    Timer(Duration(milliseconds: 500), () {
+    Timer(Duration(milliseconds: 100), () {
       Navigator.pop(context);
       Navi().getMainNav().jumpToPage(widget.curIndex + 1);
     });
@@ -141,6 +117,27 @@ class _PresenterState extends State<_Presenter> {
     );
   }
 
+  void deleteDoneItems() {
+    Navigator.pop(context);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Confirm(
+          title: 'Delete Done Items',
+          description: 'Done items in the list will lost forever.',
+          action: 'Delete',
+          onTap: () {
+            var clone = widget.todoList.cloneTodoItems();
+            clone.removeWhere((todo) => todo.status == TodoStatus.done);
+            var updatedList = widget.todoList.copyWith(todos: clone);
+            widget.dispatch(UpdateTodoList(updatedList));
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
   void deleteList() {
     Navigator.pop(context);
     showDialog(
@@ -151,9 +148,7 @@ class _PresenterState extends State<_Presenter> {
           description: 'This list will be lost forever.',
           action: 'Delete',
           onTap: () {
-            widget.curIndex == 0
-                ? Navi().getMainNav().jumpToPage(widget.curIndex)
-                : Navi().getMainNav().jumpToPage(widget.curIndex - 1);
+            widget.curIndex == 0 ? Navi().getMainNav().jumpToPage(widget.curIndex) : Navi().getMainNav().jumpToPage(widget.curIndex - 1);
             widget.dispatch(DeleteTodoList(widget.todoList.id));
             Navigator.pop(context);
           },
@@ -162,108 +157,6 @@ class _PresenterState extends State<_Presenter> {
     );
   }
 
-  Widget option(MultiSelectDialogOption option) {
-    return Builder(builder: (context) {
-      return InkWell(
-        splashColor: Themer().splashPrimary(),
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 8.0),
-          height: 40.0,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(option.title, style: TextStyle(color: Themer().anchorColor())),
-            ],
-          ),
-        ),
-        onTap: () => option.onTap(),
-      );
-    });
-  }
-
-  void setColor() {
-    Navigator.pop(context);
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        var dispatch = (TodoListColor value) {
-          widget.dispatch(SetTodoListColor(widget.todoList.id, value));
-          Navigator.pop(context);
-        };
-        var options = [
-          SettingOption(TodoListColor.purple, 'Color Scheme', 'Changes accent colors', 'Purple', dispatch, color: Colors.purple),
-          SettingOption(TodoListColor.red, 'Color Scheme', 'Changes accent colors', 'Red', dispatch, color: Colors.red),
-          SettingOption(TodoListColor.amber, 'Color Scheme', 'Changes accent colors', 'Amber', dispatch, color: Colors.amber),
-          SettingOption(TodoListColor.lightGreen, 'Color Scheme', 'Changes accent colors', 'Green', dispatch, color: Colors.lightGreen),
-          SettingOption(TodoListColor.cyan, 'Color Scheme', 'Changes accent colors', 'Cyan', dispatch, color: Colors.cyan),
-          SettingOption(TodoListColor.lightBlue, 'Color Scheme', 'Changes accent colors', 'Sky Blue', dispatch, color: Colors.lightBlue),
-          SettingOption(TodoListColor.blue, 'Color Scheme', 'Changes accent colors', 'Blue', dispatch, color: Colors.blue),
-          SettingOption(TodoListColor.indigo, 'Color Scheme', 'Changes accent colors', 'Indigo', dispatch, color: Colors.indigo),
-          SettingOption(TodoListColor.grey, 'Color Scheme', 'Changes accent colors', 'Grey', dispatch, color: Colors.grey),
-        ];
-
-        var children = options.map((option) {
-          return InkWell(
-            onTap: () => option.dispatch(option.value),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 100.0,
-                  height: 50.0,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      if (option.color != null)
-                        Container(
-                          padding: EdgeInsets.only(right: 10.0),
-                          child: Container(
-                            height: 20.0,
-                            width: 20.0,
-                            decoration: BoxDecoration(color: option.color, borderRadius: BorderRadius.circular(20.0)),
-                          ),
-                        ),
-                      Text(option.name, style: TextStyle(color: Themer().anchorColor(), fontSize: 20.0)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
-
-        var content = Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(height: 10.0),
-            Column(children: <Widget>[
-              Text('Accent color', style: TextStyle(fontSize: 18.0, fontWeight: Themer().fontBold())),
-              Container(
-                margin: EdgeInsets.only(top: 5.0),
-                width: 200.0,
-                child: Text('Set the accent color of this list.',
-                    textAlign: TextAlign.center, style: TextStyle(color: Color(0xAA604B41), fontSize: 14.0)),
-              ),
-            ]),
-            Container(height: 10.0),
-            ...children,
-            Container(height: 10.0),
-          ],
-        );
-
-        return AlertDialog(
-          contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-          content: Container(
-            width: 100,
-            child: content,
-          ),
-        );
-      },
-    );
-  }
 }
 
 class _Props {
