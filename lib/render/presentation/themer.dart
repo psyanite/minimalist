@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +18,6 @@ class Themer {
     _darkModeChoice = settings.darkModeChoice;
     _refresh();
   }
-
 
   static ThemeChoice _chosenTheme = ThemeChoice.blue;
   static Color _mainColor = Colors.blue;
@@ -63,7 +63,6 @@ class Themer {
   }
   darkModeChoice() => _darkModeChoice;
 
-
   /// Colors
   Color _white = Colors.white;
   white() => _white;
@@ -80,8 +79,10 @@ class Themer {
   Color _primaryExtraLight = Color(0xFFBBDEFB);
   primaryExtraLight() => _primaryExtraLight;
 
-  static const _defaultTextBodyColor = Color(0xFF292929);
-  Color _textBodyColor = _defaultTextBodyColor;
+  static const _defaultLightTextBodyColor = Color(0xFF292929);
+  static const _defaultDarkTextBodyColor = Colors.white70;
+  Color _textBodyColor = _defaultLightTextBodyColor;
+
   textBodyColor() => _textBodyColor;
 
   Color _anchorColor = Color(0xFF51A4FF);
@@ -105,6 +106,8 @@ class Themer {
   Color _separatorBlue = Color(0x16007AFF);
   separatorBlue() => _separatorBlue;
 
+  Color _lightGreyLight = Color(0x44606060);
+  Color _lightGreyDark = Color(0x44FFFFFF);
   Color _lightGrey = Color(0x44606060);
   lightGrey() => _lightGrey;
 
@@ -149,21 +152,13 @@ class Themer {
   FontWeight _fontExtraBold = FontWeight.w800;
   fontExtraBold() => _fontExtraBold;
 
-  TextStyle _display4 = TextStyle(fontSize: 28.0);
+  TextStyle _appBarTitleStyle =
+      TextStyle(color: _defaultPrimary, fontSize: 30.0, fontFamily: _defaultFontBase, fontWeight: _defaultFontLight, letterSpacing: 3.0);
 
-  TextStyle _bodyStyle = TextStyle(
-      color: _defaultTextBodyColor, fontSize: 14.0, fontFamily: _defaultFontBase, fontWeight: _defaultFontLight);
-
-  TextStyle _appBarTitleStyle = TextStyle(
-      color: _defaultPrimary,
-      fontSize: 30.0,
-      fontFamily: _defaultFontBase,
-      fontWeight: _defaultFontLight,
-      letterSpacing: 3.0);
   appBarTitleStyle() => _appBarTitleStyle;
 
-  TextStyle _listNameTitleStyle =
-    TextStyle(fontSize: 30.0, letterSpacing: 1.0);
+  TextStyle _listNameTitleStyle = TextStyle(fontSize: 30.0, letterSpacing: 1.0);
+
   listNameTitleStyle() => _listNameTitleStyle;
 
   /// Gradients
@@ -183,10 +178,39 @@ class Themer {
   );
   buttonGradient() => _buttonGradient;
 
-  ThemeData getThemeData() {
-    final defaultTheme = ThemeData(brightness: Brightness.light);
+  ThemeData getThemeData(Brightness brightness) {
+    final defaultTheme = ThemeData(brightness: brightness);
+
+    if (brightness == Brightness.dark) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+      _textBodyColor = _defaultDarkTextBodyColor;
+      _lightGrey = _lightGreyDark;
+      return ThemeData(
+        brightness: brightness,
+        canvasColor: Colors.black,
+        primarySwatch: materialPrimary(),
+        accentColor: materialPrimary(),
+        fontFamily: fontBase(),
+        cursorColor: primary(),
+        textTheme: defaultTheme.textTheme
+            .apply(bodyColor: textBodyColor(), displayColor: textBodyColor(), fontFamily: fontBase())
+            .merge(TextTheme(bodyText2: TextStyle(fontSize: 22.0))),
+        dialogBackgroundColor: Color(0xFF000000),
+      );
+    }
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Color(0xFFEEEEEE),
+      systemNavigationBarDividerColor: null,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ));
+    _textBodyColor = _defaultLightTextBodyColor;
+    _lightGrey = _lightGreyLight;
     return ThemeData(
-      brightness: Brightness.light,
+      brightness: brightness,
       primarySwatch: materialPrimary(),
       accentColor: materialPrimary(),
       fontFamily: fontBase(),
@@ -197,9 +221,13 @@ class Themer {
     );
   }
 
-  void updateTheme(BuildContext context) {
+  Brightness _brightness;
+  brightness() => _brightness;
+
+  void setTheme(BuildContext context, Brightness brightness) {
+    _brightness = brightness;
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    final themeData = getThemeData();
+    var themeData = getThemeData(brightness);
     themeNotifier.setTheme(themeData);
   }
 
@@ -221,8 +249,6 @@ class Themer {
 
     _mainColor = mainColor;
     _primary = mainColor;
-
-    /// TODO: Add more colors
   }
 
   _updateTextStyles() {
@@ -236,24 +262,11 @@ class Themer {
 
     _fontBase = _mainFont;
 
-    _textBodyColor = isPtSans
-      ? _defaultTextBodyColor : _defaultTextBodyColor;
-
-    _bodyStyle = TextStyle(color: textBodyColor(), fontSize: 14.0, fontFamily: _fontBase, fontWeight: _fontLight);
+    _textBodyColor = isPtSans ? _defaultLightTextBodyColor : _defaultLightTextBodyColor;
 
     _appBarTitleStyle = isPtSans
-      ? TextStyle(
-      color: _primary,
-      fontSize: 28.0,
-      fontFamily: _fontBase,
-      fontWeight: _fontLight,
-      letterSpacing: 3.0)
-    : TextStyle(
-      color: _primary,
-      fontSize: 28.0,
-      fontFamily: _fontBase,
-      fontWeight: FontWeight.w300,
-      letterSpacing: 3.0);
+        ? TextStyle(color: _primary, fontSize: 28.0, fontFamily: _fontBase, fontWeight: _fontLight, letterSpacing: 3.0)
+        : TextStyle(color: _primary, fontSize: 28.0, fontFamily: _fontBase, fontWeight: FontWeight.w300, letterSpacing: 3.0);
   }
 
   factory Themer() {

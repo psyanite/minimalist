@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:redux/redux.dart';
 
@@ -167,6 +168,9 @@ class _PresenterState extends State<_Presenter> with TickerProviderStateMixin {
       stackChildren.add(sparklesWidget);
     }
 
+    var textColor = Themer().brightness() == Brightness.dark
+      ? Color(0xBBFFFFFF) : Colors.white;
+
     stackChildren.add(Container(
         height: 30.0 + extraSize,
         width: 50.0 + extraSize,
@@ -177,7 +181,7 @@ class _PresenterState extends State<_Presenter> with TickerProviderStateMixin {
         child: Center(
             child: Text(
           "+ " + widget.count.toString(),
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22.0, letterSpacing: -1.0),
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 22.0, letterSpacing: -1.0),
         ))));
 
     return Container(

@@ -52,7 +52,7 @@ class BackArrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = this.color ?? Themer().textBodyColor();
+    final color = this.color ?? Themer().lightGrey();
     return IconButton(
       icon: Icon(CrustCons.back, color: color, size: 30.0),
       onPressed: () => Navigator.of(context).pop(),
@@ -391,7 +391,7 @@ class HeaderSliver extends StatelessWidget {
             Stack(
               children: <Widget>[
                 Container(width: 50.0, height: 60.0),
-                Positioned(left: -12.0, child: BackArrow(color: Themer().lightGrey())),
+                Positioned(left: -12.0, child: BackArrow()),
               ],
             ),
             if (title != null) Text(title, style: Themer().appBarTitleStyle())
@@ -419,7 +419,7 @@ class Header extends StatelessWidget {
               Stack(
                 children: <Widget>[
                   Container(width: 50.0, height: 60.0),
-                  Positioned(left: -12.0, child: BackArrow(color: Themer().lightGrey())),
+                  Positioned(left: -12.0, child: BackArrow()),
                 ],
               ),
               if (title != null) Text(title, style: Themer().appBarTitleStyle())

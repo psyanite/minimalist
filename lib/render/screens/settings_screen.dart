@@ -91,6 +91,16 @@ class _PresenterState extends State<_Presenter> {
   Widget darkModeControl() {
     var dispatch = (value) {
       Themer().setDarkModeChoice(value);
+      var brightness;
+      if (Themer().darkModeChoice() == DarkModeChoice.auto) {
+        brightness = MediaQuery.of(context).platformBrightness;
+      } else if (Themer().darkModeChoice() == DarkModeChoice.always) {
+        brightness = Brightness.dark;
+      } else {
+        brightness = Brightness.light;
+      }
+      Themer().setTheme(context, brightness);
+
       widget.dispatch(SetDarkModeChoice(value));
     };
     var options = [
@@ -98,14 +108,14 @@ class _PresenterState extends State<_Presenter> {
       SettingOption(DarkModeChoice.always, 'Dark Mode', null, 'Always use dark mode', dispatch),
       SettingOption(DarkModeChoice.never, 'Dark Mode', null, 'Never use dark mode', dispatch),
     ];
-    var selected = options.indexWhere((o) => o.value == DarkModeChoice.auto);
+    var selected = options.indexWhere((o) => o.value == widget.darkModeChoice);
     return _SettingControl(options: options, selected: selected);
   }
 
   Widget fontControl() {
     var dispatch = (value) {
       Themer().setChosenFont(value);
-      Themer().updateTheme(context);
+      Themer().setTheme(context, Themer().brightness());
       widget.dispatch(SetFontChoice(value));
     };
     var options = [
@@ -119,7 +129,6 @@ class _PresenterState extends State<_Presenter> {
   Widget verticalTextAlignControl() {
     var dispatch = (value) {
       Themer().setVerticalContentAlign(value);
-      Themer().updateTheme(context);
       widget.dispatch(SetVerticalContentAlign(value));
     };
     var options = [

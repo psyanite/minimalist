@@ -141,7 +141,7 @@ class _PresenterState extends State<_Presenter> {
                 margin: EdgeInsets.only(top: 5.0),
                 width: 200.0,
                 child: Text('Set the accent color of this list.',
-                    textAlign: TextAlign.center, style: TextStyle(color: Color(0xAA604B41), fontSize: 14.0)),
+                    textAlign: TextAlign.center, style: TextStyle(color: Themer().hintTextColor(), fontSize: 14.0)),
               ),
             ]),
             Container(height: 10.0),

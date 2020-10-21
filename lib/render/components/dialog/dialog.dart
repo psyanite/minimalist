@@ -41,7 +41,7 @@ class BurntDialog extends StatelessWidget {
             description,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Color(0xAA604B41),
+              color: Themer().hintTextColor(),
               fontSize: 16.0,
             ),
           ),

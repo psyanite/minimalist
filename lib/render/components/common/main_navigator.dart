@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/models/todo_list.dart';
 import 'package:minimalist/render/home/todos_screen.dart';
+import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/services/navi.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:redux/redux.dart';
@@ -36,7 +37,7 @@ class _Presenter extends StatefulWidget {
   MainNavigatorState createState() => MainNavigatorState();
 }
 
-class MainNavigatorState extends State<_Presenter> {
+class MainNavigatorState extends State<_Presenter> with WidgetsBindingObserver {
   PageController _ctrl = PageController();
   Queue<int> _history;
   bool _lastActionWasGo;
@@ -48,14 +49,38 @@ class MainNavigatorState extends State<_Presenter> {
     _history = Queue<int>();
     _history.addLast(0);
 
+    WidgetsBinding.instance.addObserver(this);
+
+    Future.delayed(Duration.zero, () async {
+      var brightness;
+      if (Themer().darkModeChoice() == DarkModeChoice.auto) {
+        brightness = MediaQuery.of(context).platformBrightness;
+      } else if (Themer().darkModeChoice() == DarkModeChoice.always) {
+        brightness = Brightness.dark;
+      } else {
+        brightness = Brightness.light;
+      }
+      Themer().setTheme(context, brightness);
+    });
+
     Navi(mainNav: this);
   }
 
   @override
   dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _ctrl.dispose();
     _ctrl = null;
     super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    if (Themer().darkModeChoice() == DarkModeChoice.auto) {
+      var brightness = MediaQuery.of(context).platformBrightness == Brightness.dark ? Brightness.light : Brightness.dark;
+      Themer().setTheme(context, brightness);
+    }
+    super.didChangePlatformBrightness();
   }
 
   @override

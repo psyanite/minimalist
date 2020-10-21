@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/state/app/app_middleware.dart';
@@ -43,9 +43,11 @@ main() async {
     middleware: createMiddleware(),
   );
 
+  var brightness = SchedulerBinding.instance.window.platformBrightness;
+
   runApp(
     ChangeNotifierProvider<ThemeNotifier>(
-      create: (_) => ThemeNotifier(Themer().getThemeData()),
+      create: (_) => ThemeNotifier(Themer().getThemeData(brightness)),
       child: Main(store: store),
     ),
   );
@@ -65,24 +67,6 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-
-  @override
-  initState() {
-    super.initState();
-
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Color(0xFFEEEEEE),
-      systemNavigationBarDividerColor: null,
-      systemNavigationBarIconBrightness: Brightness.dark,
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ));
-
-    Future.delayed(Duration.zero, () async {
-      Themer().updateTheme(context);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

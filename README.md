@@ -8,6 +8,8 @@ Delete items that are no longer serving you.
 Make lists that actually enable you to GET THINGS DONE!
 
 ## Todo
+* Delete last list bugs out...
+* Dark/Light splash screen
 * Package app for release
 * Upload to Google Play Store
 * Hide counter

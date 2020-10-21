@@ -38,7 +38,7 @@ class Confirm extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(top: 5.0),
       width: 200.0,
-      child: Text(description, textAlign: TextAlign.center, style: TextStyle(color: Color(0xAA604B41), fontSize: 14.0)),
+      child: Text(description, textAlign: TextAlign.center, style: TextStyle(color: Themer().hintTextColor(), fontSize: 14.0)),
     );
   }
 
