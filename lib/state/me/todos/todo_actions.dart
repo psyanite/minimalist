@@ -1,66 +1,104 @@
-  import 'package:minimalist/models/todo_item.dart';
-import 'package:minimalist/models/todo_list.dart';
+import 'package:minimalist/models/board.dart';
 
-class CreateNewTodoList {
-  final int afterId;
+class SetCurBoard {
+  final int curBoard;
 
-  CreateNewTodoList(this.afterId);
+  SetCurBoard(this.curBoard);
 }
 
-class UpdateTodoList {
-  final TodoList list;
+class CreateNewBoard {
+  final String name;
 
-  UpdateTodoList(this.list);
+  CreateNewBoard(this.name);
 }
 
-class DeleteTodoList {
-  final int listId;
+class UpdateBoard {
+  final Board board;
 
-  DeleteTodoList(this.listId);
+  UpdateBoard(this.board);
 }
 
-class ReorderList {
-  final int curIndex;
-  final int newIndex;
+class DeleteBoard {
+  final Board board;
 
-  ReorderList(this.curIndex, this.newIndex);
+  DeleteBoard(this.board);
 }
 
-class AddTodo {
-  final int listId;
-  final TodoItem todo;
-
-  AddTodo(this.listId, this.todo);
-}
-
-class DeleteTodo {
-  final int listId;
-  final TodoItem todo;
-
-  DeleteTodo(this.listId, this.todo);
-}
-
-class ReorderTodo {
-  final int listId;
+class ReorderBoard {
   final int oldIndex;
   final int newIndex;
 
-  ReorderTodo(this.listId, this.oldIndex, this.newIndex);
+  ReorderBoard(this.oldIndex, this.newIndex);
 }
 
-class UpdateTodo {
-  final int listId;
-  final TodoItem original;
-  final TodoItem todo;
-
-  UpdateTodo(this.listId, this.original, this.todo);
-}
-
-class UpdateTodoStatus {
-  final int listId;
-  final TodoItem todo;
-  final TodoStatus newStatus;
-
-  UpdateTodoStatus(this.listId, this.todo, this.newStatus);
-
-}
+// class CreateNewTodoList {
+//   final Board board;
+//   final int afterId;
+//
+//   CreateNewTodoList(this.board, this.afterId);
+// }
+//
+// class UpdateTodoList {
+//   final Board board;
+//   final TodoList list;
+//
+//   UpdateTodoList(this.board, this.list);
+// }
+//
+// class DeleteTodoList {
+//   final Board board;
+//   final TodoList list;
+//
+//   DeleteTodoList(this.board, this.list);
+// }
+//
+// class ReorderList {
+//   final Board board;
+//   final int curIndex;
+//   final int newIndex;
+//
+//   ReorderList(this.board, this.curIndex, this.newIndex);
+// }
+//
+// class AddTodo {
+//   final Board board;
+//   final int listId;
+//   final TodoItem todo;
+//
+//   AddTodo(this.board, this.listId, this.todo);
+// }
+//
+// class DeleteTodo {
+//   final Board board;
+//   final int listId;
+//   final TodoItem todo;
+//
+//   DeleteTodo(this.board, this.listId, this.todo);
+// }
+//
+// class ReorderTodo {
+//   final Board board;
+//   final int listId;
+//   final int oldIndex;
+//   final int newIndex;
+//
+//   ReorderTodo(this.board, this.listId, this.oldIndex, this.newIndex);
+// }
+//
+// class UpdateTodo {
+//   final Board board;
+//   final int listId;
+//   final TodoItem original;
+//   final TodoItem todo;
+//
+//   UpdateTodo(this.board, this.listId, this.original, this.todo);
+// }
+//
+// class UpdateTodoStatus {
+//   final Board board;
+//   final int listId;
+//   final TodoItem todo;
+//   final TodoStatus newStatus;
+//
+//   UpdateTodoStatus(this.board, this.listId, this.todo, this.newStatus);
+// }

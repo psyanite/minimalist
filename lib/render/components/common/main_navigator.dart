@@ -3,7 +3,8 @@ import 'dart:collection';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:minimalist/models/todo_list.dart';
+import 'package:minimalist/models/board.dart';
+import 'package:minimalist/render/home/boards_screen.dart';
 import 'package:minimalist/render/home/todos_screen.dart';
 import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/services/navi.dart';
@@ -11,15 +12,17 @@ import 'package:minimalist/state/app/app_state.dart';
 import 'package:redux/redux.dart';
 
 class MainNavigator extends StatelessWidget {
-  MainNavigator({Key key}) : super(key: key);
+  final int boardId;
+
+  MainNavigator(this.boardId, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _Props>(
-      converter: (Store<AppState> store) => _Props.fromStore(store),
+      converter: (Store<AppState> store) => _Props.fromStore(store, boardId),
       builder: (BuildContext context, _Props props) {
         return _Presenter(
-          lists: props.lists,
+          board: props.board,
           dispatch: props.dispatch,
         );
       },
@@ -28,10 +31,10 @@ class MainNavigator extends StatelessWidget {
 }
 
 class _Presenter extends StatefulWidget {
-  final LinkedHashMap<int, TodoList> lists;
+  final Board board;
   final Function dispatch;
 
-  _Presenter({Key key, this.lists, this.dispatch}) : super(key: key);
+  _Presenter({Key key, this.board, this.dispatch}) : super(key: key);
 
   @override
   MainNavigatorState createState() => MainNavigatorState();
@@ -92,15 +95,16 @@ class MainNavigatorState extends State<_Presenter> with WidgetsBindingObserver {
           controller: _ctrl,
           physics: BouncingScrollPhysics(),
           onPageChanged: _onPageChange,
-          children: widget.lists.keys.map((id) => TodosScreen(id)).toList(),
+          children: widget.board.lists.keys.map((id) => TodosScreen(widget.board, id)).toList(),
         ),
       ),
     );
   }
 
   Future<bool> _onWillPop() {
-    if (_history.length == 0) {
-      return Future(() => true);
+    if (_history.length == 1) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => BoardsScreen()));
+      return Future(() => false);
     } else {
       var history = Queue<int>.from(_history);
       if (_lastActionWasGo) history.removeLast();
@@ -135,17 +139,17 @@ class MainNavigatorState extends State<_Presenter> with WidgetsBindingObserver {
 }
 
 class _Props {
-  final LinkedHashMap<int, TodoList> lists;
+  final Board board;
   final Function dispatch;
 
   _Props({
-    this.lists,
+    this.board,
     this.dispatch,
   });
 
-  static fromStore(Store<AppState> store) {
+  static fromStore(Store<AppState> store, int boardId) {
     return _Props(
-      lists: store.state.todo.lists,
+      board: store.state.todo.boards[boardId],
       dispatch: (action) => store.dispatch(action),
     );
   }

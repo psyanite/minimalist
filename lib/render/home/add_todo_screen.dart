@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/models/board.dart';
 import 'package:minimalist/models/todo_item.dart';
+import 'package:minimalist/models/todo_list.dart';
 import 'package:minimalist/render/components/common/components.dart';
 import 'package:minimalist/render/presentation/themer.dart';
 import 'package:minimalist/state/app/app_state.dart';
@@ -9,29 +11,32 @@ import 'package:minimalist/state/me/todos/todo_actions.dart';
 import 'package:redux/redux.dart';
 
 class AddTodoScreen extends StatelessWidget {
-  final int listId;
+  final Board board;
+  final TodoList list;
   final Function onSubmit;
 
-  const AddTodoScreen(this.listId, this.onSubmit, {Key key}) : super(key: key);
+  const AddTodoScreen(this.board, this.list, this.onSubmit, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, Function>(
       converter: (Store<AppState> store) {
-        return (item) => store.dispatch(AddTodo(listId, item));
+        return (a) => store.dispatch(a);
       },
-      builder: (BuildContext context, Function addTodoItem) {
-        return _Presenter(addTodoItem: addTodoItem, onSubmit: onSubmit);
+      builder: (BuildContext context, Function dispatch) {
+        return _Presenter(board: board, list: list, dispatch: dispatch, onSubmit: onSubmit);
       },
     );
   }
 }
 
 class _Presenter extends StatefulWidget {
-  final Function addTodoItem;
+  final Board board;
+  final TodoList list;
+  final Function dispatch;
   final Function onSubmit;
 
-  _Presenter({Key key, this.addTodoItem, this.onSubmit}) : super(key: key);
+  _Presenter({Key key, this.board, this.list, this.dispatch, this.onSubmit}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
@@ -148,10 +153,11 @@ class _PresenterState extends State<_Presenter> {
     return InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
-      onTap: () => setState(() {
-        _showDesc = !_showDesc;
-        _descTextFieldFocus.requestFocus();
-      }),
+      onTap: () =>
+          setState(() {
+            _showDesc = !_showDesc;
+            _descTextFieldFocus.requestFocus();
+          }),
       child: Container(
         margin: EdgeInsets.only(top: 10.0, bottom: 30.0, right: 50.0),
         child: Text('Add details', style: TextStyle(color: Themer().anchorColor())),
@@ -161,8 +167,8 @@ class _PresenterState extends State<_Presenter> {
 
   void submit() {
     if (_title != null) {
-      var todoItem = TodoItem(title: _title, desc: _desc, createdAt: DateTime.now());
-      widget.addTodoItem(todoItem);
+      var todo = TodoItem(title: _title, desc: _desc, createdAt: DateTime.now());
+      widget.dispatch(UpdateBoard(widget.board.updateList(widget.list.addTodo(todo))));
       Navigator.of(context).pop();
       widget.onSubmit();
     }

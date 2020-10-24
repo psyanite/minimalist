@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/models/board.dart';
 import 'package:minimalist/models/todo_item.dart';
+import 'package:minimalist/models/todo_list.dart';
 import 'package:minimalist/render/components/common/components.dart';
 import 'package:minimalist/render/components/dialog/confirm.dart';
 import 'package:minimalist/render/presentation/themer.dart';
@@ -11,10 +13,11 @@ import 'package:minimalist/utils/time_util.dart';
 import 'package:redux/redux.dart';
 
 class ShowTodoScreen extends StatelessWidget {
-  final int listId;
+  final Board board;
+  final TodoList list;
   final TodoItem todo;
 
-  const ShowTodoScreen(this.listId, this.todo, {Key key}) : super(key: key);
+  const ShowTodoScreen(this.board, this.list, this.todo, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,8 @@ class ShowTodoScreen extends StatelessWidget {
       converter: (Store<AppState> store) => _Props.fromStore(store),
       builder: (BuildContext context, _Props props) {
         return _Presenter(
-          listId: listId,
+          board: board,
+          list: list,
           todo: todo,
           dispatch: props.dispatch,
         );
@@ -32,11 +36,12 @@ class ShowTodoScreen extends StatelessWidget {
 }
 
 class _Presenter extends StatefulWidget {
-  final int listId;
+  final Board board;
+  final TodoList list;
   final TodoItem todo;
   final Function dispatch;
 
-  const _Presenter({Key key, this.listId, this.todo, this.dispatch}) : super(key: key);
+  const _Presenter({Key key, this.board, this.list, this.todo, this.dispatch}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
@@ -44,6 +49,7 @@ class _Presenter extends StatefulWidget {
 
 class _PresenterState extends State<_Presenter> {
   TextEditingController _titleCtrl;
+  String _title;
   TextEditingController _descCtrl;
   bool _showDesc;
   FocusNode _descTextFieldFocus;
@@ -113,6 +119,7 @@ class _PresenterState extends State<_Presenter> {
       child: TextField(
         controller: _titleCtrl,
         style: TextStyle(fontSize: 36.0),
+        onChanged: (text) => setState(() => _title = text),
         onSubmitted: (text) => submit(),
         maxLines: null,
         decoration: InputDecoration(
@@ -161,6 +168,8 @@ class _PresenterState extends State<_Presenter> {
           ],
         ),
         InkWell(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           onTap: showDeleteDialog,
           child: Container(
               margin: EdgeInsets.only(top: 30.0, bottom: 20.0, left: 20.0),
@@ -179,7 +188,7 @@ class _PresenterState extends State<_Presenter> {
           description: 'This todo will be lost forever.',
           action: 'Delete',
           onTap: () {
-            widget.dispatch(DeleteTodo(widget.listId, widget.todo));
+            widget.dispatch(UpdateBoard(widget.board.updateList(widget.list.deleteTodo(widget.todo))));
             Navigator.pop(context);
             Navigator.pop(context);
           },
@@ -189,7 +198,7 @@ class _PresenterState extends State<_Presenter> {
   }
 
   Widget button() {
-    if (_titleCtrl.text == '') {
+    if (_title == '') {
       return Padding(
           padding: EdgeInsets.only(bottom: 20.0),
           child: BurntButton(text: 'Delete', onTap: showDeleteDialog, color: Colors.red));
@@ -232,9 +241,9 @@ class _PresenterState extends State<_Presenter> {
   }
 
   void submit() {
-    if (_titleCtrl.text != null) {
-      var newTodoItem = widget.todo.copyWith(title: _titleCtrl.text, desc: _descCtrl.text);
-      widget.dispatch(UpdateTodo(widget.listId, widget.todo, newTodoItem));
+    if (_title != '') {
+      var newTodo = widget.todo.copyWith(title: _titleCtrl.text, desc: _descCtrl.text);
+      widget.dispatch(UpdateBoard(widget.board.updateList(widget.list.updateTodo(widget.todo, newTodo))));
       Navigator.of(context).pop();
     }
   }

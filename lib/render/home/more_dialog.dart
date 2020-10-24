@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/models/board.dart';
 import 'package:minimalist/models/todo_item.dart';
 import 'package:minimalist/models/todo_list.dart';
 import 'package:minimalist/render/components/dialog/bottom_modal.dart';
@@ -16,16 +17,18 @@ import 'package:minimalist/state/me/todos/todo_actions.dart';
 import 'package:redux/redux.dart';
 
 class MoreDialog extends StatelessWidget {
+  final Board board;
   final TodoList todoList;
 
-  const MoreDialog(this.todoList, {Key key}) : super(key: key);
+  const MoreDialog(this.board, this.todoList, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _Props>(
-      converter: (Store<AppState> store) => _Props.fromStore(store, todoList.id),
+      converter: (Store<AppState> store) => _Props.fromStore(store, board, todoList.id),
       builder: (BuildContext context, _Props props) {
         return _Presenter(
+          board: board,
           todoList: todoList,
           curIndex: props.curIndex,
           positionOptions: props.positionOptions,
@@ -37,12 +40,13 @@ class MoreDialog extends StatelessWidget {
 }
 
 class _Presenter extends StatefulWidget {
+  final Board board;
   final TodoList todoList;
   final int curIndex;
   final List<int> positionOptions;
   final Function dispatch;
 
-  const _Presenter({Key key, this.todoList, this.curIndex, this.positionOptions, this.dispatch}) : super(key: key);
+  const _Presenter({Key key, this.board, this.todoList, this.curIndex, this.positionOptions, this.dispatch}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
@@ -80,12 +84,14 @@ class _PresenterState extends State<_Presenter> {
   void showCustomiseListDialog() {
     Navigator.pop(context);
     showModalBottomSheet(context: context, builder: (context) {
-      return CustomiseListDialog(widget.todoList);
+      return CustomiseListDialog(widget.board, widget.todoList);
     });
   }
 
   void addList() {
-    widget.dispatch(CreateNewTodoList(widget.todoList.id));
+    var update = widget.board.createNewTodoList(widget.todoList.id);
+    widget.dispatch(UpdateBoard(update));
+
     setState(() => _addListLoading = true);
     Timer(Duration(milliseconds: 100), () {
       Navigator.pop(context);
@@ -104,7 +110,7 @@ class _PresenterState extends State<_Presenter> {
         var dialogOptions = List<DialogOption>.from(widget.positionOptions.map((index) => DialogOption(
             display: 'Page ${index + 1}',
             onTap: () {
-              widget.dispatch(ReorderList(widget.curIndex, index));
+              widget.dispatch(UpdateBoard(widget.board.reorderList(widget.curIndex, index)));
               Navigator.pop(context);
               Navi().getMainNav().jumpToPage(index);
             })));
@@ -130,7 +136,7 @@ class _PresenterState extends State<_Presenter> {
             var clone = widget.todoList.cloneTodoItems();
             clone.removeWhere((todo) => todo.status == TodoStatus.done);
             var updatedList = widget.todoList.copyWith(todos: clone);
-            widget.dispatch(UpdateTodoList(updatedList));
+            widget.dispatch(UpdateBoard(widget.board.updateList(updatedList)));
             Navigator.pop(context);
           },
         );
@@ -148,8 +154,12 @@ class _PresenterState extends State<_Presenter> {
           description: 'This list will be lost forever.',
           action: 'Delete',
           onTap: () {
-            widget.curIndex == 0 ? Navi().getMainNav().jumpToPage(widget.curIndex) : Navi().getMainNav().jumpToPage(widget.curIndex - 1);
-            widget.dispatch(DeleteTodoList(widget.todoList.id));
+            widget.dispatch(UpdateBoard(widget.board.deleteList(widget.todoList)));
+            if (widget.curIndex == 0) {
+              Navi().getMainNav().jumpToPage(widget.curIndex);
+            } else if (widget.curIndex > 0) {
+              Navi().getMainNav().jumpToPage(widget.curIndex - 1);
+            }
             Navigator.pop(context);
           },
         );
@@ -170,8 +180,8 @@ class _Props {
     this.positionOptions,
   });
 
-  static fromStore(Store<AppState> store, int listId) {
-    var list = store.state.todo.lists.keys;
+  static fromStore(Store<AppState> store, Board board, int listId) {
+    var list = store.state.todo.boards[board.id].lists.keys;
     var curIndex = list.toList().indexOf(listId);
     var positionOptions = Iterable<int>.generate(list.length).toList();
     positionOptions.remove(curIndex);

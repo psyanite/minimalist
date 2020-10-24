@@ -2,89 +2,83 @@ import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-import 'package:minimalist/models/todo_item.dart';
+import 'package:minimalist/models/board.dart';
 import 'package:minimalist/models/todo_list.dart';
+
 
 @immutable
 class TodoState {
-  final int nextListId;
-  final LinkedHashMap<int, TodoList> lists;
+  final int curBoard;
+  final int nextBoardId;
+  final LinkedHashMap<int, Board> boards;
 
-  TodoState({this.nextListId, this.lists});
+  TodoState({this.curBoard, this.nextBoardId, this.boards});
 
   TodoState.initialState()
-      : nextListId = 1,
-        lists = LinkedHashMap.from({
-          0: TodoList(id: 0, name: 'todo', todos: [
-            TodoItem(title: 'shop for a new cape', createdAt: DateTime.now()),
-            TodoItem(title: 'get pedicure', createdAt: DateTime.now()),
-            TodoItem(title: 'service the batmobile', createdAt: DateTime.now()),
-            TodoItem(title: 'call robin', createdAt: DateTime.now()),
-            TodoItem(title: 'make reservation', createdAt: DateTime.now()),
-            TodoItem(title: 'buy flowers', createdAt: DateTime.now()),
-          ])
-        });
+      : curBoard = 0,
+        nextBoardId = 1,
+        boards = LinkedHashMap.from({0: Board.initialState()});
 
   TodoState copyWith({
-    int nextListId,
-    LinkedHashMap<int, TodoList> lists,
+    int curBoard,
+    int nextBoardId,
+    LinkedHashMap<int, Board> boards,
   }) {
     return TodoState(
-      nextListId: nextListId ?? this.nextListId,
-      lists: lists ?? this.lists,
+      curBoard: curBoard ?? this.curBoard,
+      nextBoardId: nextBoardId ?? this.nextBoardId,
+      boards: boards ?? this.boards,
     );
   }
 
   factory TodoState.rehydrate(Map<String, dynamic> json) {
-    List<TodoList> lists = List<TodoList>.from(json['lists'].map((i) => TodoList.rehydrate(i)));
-    // return TodoState.initialState();
+    List<Board> boards = List<Board>.from(json['boards'].map((i) => Board.rehydrate(i)));
     return TodoState(
-      nextListId: json['nextListId'],
-      lists: LinkedHashMap<int, TodoList>.fromEntries(lists.map((list) => MapEntry(list.id, list))),
+      curBoard: json['curBoard'],
+      nextBoardId: json['nextBoardId'],
+      boards: LinkedHashMap<int, Board>.fromEntries(boards.map((list) => MapEntry(list.id, list))),
     );
   }
 
   Map<String, dynamic> toPersist() {
     return <String, dynamic>{
-      'nextListId': this.nextListId,
-      'lists': this.lists.values.map((list) => list.toPersist()).toList(),
+      'curBoard': this.curBoard,
+      'nextBoardId': this.nextBoardId,
+      'boards': this.boards.values.map((list) => list.toPersist()).toList(),
     };
   }
 
-  TodoState updateList(TodoList list) {
-    var clone = cloneLists();
-    clone[list.id] = list;
-    return copyWith(lists: clone);
+  TodoState createNewBoard(String name) {
+    var newBoard = Board(id: nextBoardId, name: name, nextListId: 1, lists: LinkedHashMap.from({0: TodoList(id: 0, name: "todos")}));
+    var clone = cloneBoards();
+    clone[nextBoardId] = newBoard;
+    return copyWith(nextBoardId: nextBoardId + 1, boards: clone);
   }
 
-  TodoState createNewTodoList(int afterId) {
-    var clone = cloneLists().values.toList();
-    var newList = TodoList(id: nextListId, name: 'todo');
-    var newIndex = lists.keys.toList().indexOf(afterId) + 1;
-    if (newIndex == lists.length) {
-      clone.add(newList);
-    } else {
-      clone.insert(newIndex, newList);
-    }
-    return copyWith(nextListId: nextListId + 1, lists: toMap(clone));
-  }
-
-  TodoState deleteTodoList(int listId) {
-    var clone = cloneLists();
-    clone.removeWhere((id, todoList) => listId == id);
+  TodoState deleteBoard(Board board) {
+    var clone = cloneBoards();
+    clone.remove(board.id);
     if (clone.length == 0) {
-      lists[0] = TodoList(id: 0);
+      return TodoState.initialState();
+    } else {
+      return copyWith(boards: clone);
     }
-    return copyWith(lists: clone);
   }
 
-  TodoState reorderList(int curIndex, int newIndex) {
-    var clone = cloneLists();
-    var update = reorderListy(clone, curIndex, newIndex);
-    return copyWith(lists: update);
+  TodoState updateBoard(Board board) {
+    var clone = cloneBoards();
+    clone[board.id] = board;
+    return copyWith(boards: clone);
   }
 
-  LinkedHashMap<int, TodoList> reorderListy(LinkedHashMap<int, TodoList> hashMap, int curIndex, int newIndex) {
+  TodoState reorderBoard(int curIndex, int newIndex) {
+    var clone = cloneBoards();
+    var update = reorderBoardy(clone, curIndex, newIndex);
+    return copyWith(boards: update);
+  }
+
+  LinkedHashMap<int, Board> reorderBoardy(
+      LinkedHashMap<int, Board> hashMap, int curIndex, int newIndex) {
     var lists = hashMap.values.toList();
     var list = lists.elementAt(curIndex);
     lists.removeAt(curIndex);
@@ -92,50 +86,20 @@ class TodoState {
     return toMap(lists);
   }
 
-  LinkedHashMap<int, TodoList> toMap(List<TodoList> lists) {
-    return LinkedHashMap<int, TodoList>.fromEntries(lists.map((list) => MapEntry(list.id, list)));
+  LinkedHashMap<int, Board> toMap(List<Board> boards) {
+    return LinkedHashMap<int, Board>.fromEntries(
+        boards.map((list) => MapEntry(list.id, list)));
   }
 
-  TodoState addTodo(int listId, TodoItem todo) {
-    var clone = cloneLists();
-    clone[listId] = clone[listId].addTodo(todo);
-    return copyWith(lists: clone);
-  }
-
-  TodoState deleteTodo(int listId, TodoItem todo) {
-    var clone = cloneLists();
-    clone[listId] = clone[listId].deleteTodo(todo);
-    return copyWith(lists: clone);
-  }
-
-  TodoState updateTodo(int listId, TodoItem original, TodoItem todo) {
-    var clone = cloneLists();
-    clone[listId] = clone[listId].updateTodo(original, todo);
-    return copyWith(lists: clone);
-  }
-
-  TodoState updateTodoStatus(int listId, TodoItem todo, TodoStatus newStatus) {
-    var clone = cloneLists();
-    clone[listId] = clone[listId].updateTodoStatus(todo, newStatus);
-    return copyWith(lists: clone);
-  }
-
-  TodoState reorderTodo(int listId, int oldIndex, int newIndex) {
-    if (newIndex > oldIndex) newIndex -= 1;
-    var clone = cloneLists();
-    clone[listId] = clone[listId].reorderTodo(oldIndex, newIndex);
-    return copyWith(lists: clone);
-  }
-
-  LinkedHashMap<int, TodoList> cloneLists() {
-    return LinkedHashMap<int, TodoList>.from(lists);
+  LinkedHashMap<int, Board> cloneBoards() {
+    return LinkedHashMap<int, Board>.from(boards);
   }
 
   @override
   String toString() {
-    var lists = this.lists.map((id, list) => MapEntry(id, '$id: ${list.toString()}')).values;
+    var boards = this.boards.map((id, board) => MapEntry(id, '$id: ${board.toString()}')).values;
     return '''{
-        lists: ${lists.join("\n")}, 
+        boards: ${boards.join("\n")}, 
       }''';
   }
 }

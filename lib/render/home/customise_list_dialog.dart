@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/models/board.dart';
 import 'package:minimalist/models/todo_list.dart';
 import 'package:minimalist/render/components/dialog/bottom_modal.dart';
 import 'package:minimalist/render/components/dialog/confirm.dart';
@@ -13,9 +14,10 @@ import 'package:minimalist/state/me/todos/todo_actions.dart';
 import 'package:redux/redux.dart';
 
 class CustomiseListDialog extends StatelessWidget {
+  final Board board;
   final TodoList todoList;
 
-  const CustomiseListDialog(this.todoList, {Key key}) : super(key: key);
+  const CustomiseListDialog(this.board, this.todoList, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class CustomiseListDialog extends StatelessWidget {
       converter: (Store<AppState> store) => _Props.fromStore(store, todoList.id),
       builder: (BuildContext context, _Props props) {
         return _Presenter(
+          board: board,
           todoList: todoList,
           dispatch: props.dispatch,
         );
@@ -32,10 +35,11 @@ class CustomiseListDialog extends StatelessWidget {
 }
 
 class _Presenter extends StatefulWidget {
+  final Board board;
   final TodoList todoList;
   final Function dispatch;
 
-  const _Presenter({Key key, this.todoList, this.dispatch}) : super(key: key);
+  const _Presenter({Key key, this.board, this.todoList, this.dispatch}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
@@ -56,7 +60,7 @@ class _PresenterState extends State<_Presenter> {
 
   void setListName() {
     Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (_) => SetListNameScreen(widget.todoList)));
+    Navigator.push(context, MaterialPageRoute(builder: (_) => SetListNameScreen(widget.board, widget.todoList)));
   }
 
   void toggleCounter() {
@@ -71,7 +75,7 @@ class _PresenterState extends State<_Presenter> {
           description: '$verb the counter for the number of done items in the top right hand corner.',
           action: verb,
           onTap: () {
-            widget.dispatch(UpdateTodoList(widget.todoList.copyWith(showCounter: !showCounter)));
+            widget.dispatch(UpdateBoard(widget.board.updateList(widget.todoList.copyWith(showCounter: !showCounter))));
             Navigator.pop(context);
           },
         );
@@ -85,7 +89,7 @@ class _PresenterState extends State<_Presenter> {
       context: context,
       builder: (BuildContext context) {
         var dispatch = (TodoListColor value) {
-          widget.dispatch(UpdateTodoList(widget.todoList.copyWith(color: value)));
+          widget.dispatch(UpdateBoard(widget.board.updateList(widget.todoList.copyWith(color: value))));
           Navigator.pop(context);
         };
         var options = [
@@ -136,12 +140,12 @@ class _PresenterState extends State<_Presenter> {
           children: <Widget>[
             Container(height: 10.0),
             Column(children: <Widget>[
-              Text('Accent color', style: TextStyle(fontSize: 18.0, fontWeight: Themer().fontBold())),
+              Text('Accent color', style: TextStyle(fontSize: 22.0, fontWeight: Themer().fontBold())),
               Container(
                 margin: EdgeInsets.only(top: 5.0),
                 width: 200.0,
                 child: Text('Set the accent color of this list.',
-                    textAlign: TextAlign.center, style: TextStyle(color: Themer().hintTextColor(), fontSize: 14.0)),
+                    textAlign: TextAlign.center, style: TextStyle(color: Themer().hintTextColor(), fontSize: 20.0)),
               ),
             ]),
             Container(height: 10.0),

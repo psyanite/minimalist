@@ -1,12 +1,6 @@
 # minimalist
 All great things are achieved one step at a time.
 
-Stop making ineffective todo list that's just full of things you're just avoiding doing.
-Break down tasks into mini-achievements, to gain a sense of progress.
-Maintain short lists to reduce overwhelm.
-Delete items that are no longer serving you.
-Make lists that actually enable you to GET THINGS DONE!
-
 ## Todo
 * Delete last list bugs out...
 * Dark/Light splash screen

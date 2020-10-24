@@ -204,7 +204,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
   //
   // This value is used when the extents haven't yet been calculated from
   // the currently dragging widget, such as when it first builds.
-  static const double _defaultDropAreaExtent = 0.0;
+  static const double _defaultDropAreaExtent = 20.0;
 
   // The additional margin to place around a computed drop area.
   static const double _dropAreaMargin = 8.0;
@@ -334,13 +334,11 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
     // If the context is off screen, then we request a scroll to make it visible.
     if (!onScreen) {
       _scrolling = true;
-      _scrollController.position
-          .animateTo(
+      _scrollController.position.animateTo(
         scrollOffset < bottomOffset ? bottomOffset : topOffset,
         duration: _scrollAnimationDuration,
         curve: Curves.easeInOut,
-      )
-          .then((void value) {
+      ).then((void value) {
         setState(() {
           _scrolling = false;
         });

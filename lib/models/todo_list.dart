@@ -13,7 +13,7 @@ class TodoList {
 
   TodoList({
     this.id,
-    this.name = "",
+    this.name = "todo",
     this.color = TodoListColor.blue,
     this.completedCount = 0,
     this.showCounter = true,

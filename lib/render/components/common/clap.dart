@@ -3,42 +3,19 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/render/presentation/themer.dart';
-import 'package:minimalist/state/app/app_state.dart';
-import 'package:redux/redux.dart';
 
-class Clap extends StatelessWidget {
-  final int todoListId;
-  final Color color;
-
-  Clap(this.todoListId, this.color, {Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return StoreConnector<AppState, _Props>(
-      converter: (Store<AppState> store) => _Props.fromStore(store, todoListId),
-      builder: (BuildContext context, _Props props) {
-        return _Presenter(
-          color: color,
-          count: props.count,
-        );
-      },
-    );
-  }
-}
-
-class _Presenter extends StatefulWidget {
-  final Color color;
+class Clap extends StatefulWidget {
   final int count;
+  final Color color;
 
-  _Presenter({Key key, this.color, this.count}) : super(key: key);
+  Clap(this.count, this.color, {Key key}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
 }
 
-class _PresenterState extends State<_Presenter> with TickerProviderStateMixin {
+class _PresenterState extends State<Clap> with TickerProviderStateMixin {
   double _sparklesAngle = 0.0;
   ScoreWidgetStatus _scoreWidgetStatus = ScoreWidgetStatus.HIDDEN;
   final duration = Duration(milliseconds: 400);
@@ -96,7 +73,7 @@ class _PresenterState extends State<_Presenter> with TickerProviderStateMixin {
   }
 
   @override
-  void didUpdateWidget(_Presenter old) {
+  void didUpdateWidget(Clap old) {
     if (old.count < widget.count) {
       if (scoreOutETA != null) {
         scoreOutETA.cancel();
@@ -191,20 +168,6 @@ class _PresenterState extends State<_Presenter> with TickerProviderStateMixin {
         overflow: Overflow.visible,
         children: stackChildren,
       ),
-    );
-  }
-}
-
-class _Props {
-  final int count;
-
-  _Props({
-    this.count,
-  });
-
-  static fromStore(Store<AppState> store, int listId) {
-    return _Props(
-      count: store.state.todo.lists[listId].completedCount,
     );
   }
 }

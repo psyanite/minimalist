@@ -72,12 +72,12 @@ class _MainState extends State<Main> {
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
       store: widget.store,
-      child: StoreConnector<AppState, int>(
+      child: StoreConnector<AppState, _Props>(
           onInit: (Store<AppState> store) async {
             Themer().init(store.state.settings);
           },
-          converter: (Store<AppState> store) => 1,
-          builder: (BuildContext context, int props) {
+          converter: (Store<AppState> store) => _Props.fromStore(store),
+          builder: (BuildContext context, _Props props) {
             final themeNotifier = Provider.of<ThemeNotifier>(context);
 
             return MaterialApp(
@@ -87,7 +87,7 @@ class _MainState extends State<Main> {
               theme: themeNotifier.getTheme(),
               initialRoute: MainRoutes.home,
               routes: <String, WidgetBuilder>{
-                MainRoutes.home: (context) => MainNavigator(),
+                MainRoutes.home: (context) => MainNavigator(props.boardId),
               },
               builder: (context, child) {
                 var currentTsf = MediaQuery.of(context).textScaleFactor;
@@ -100,6 +100,23 @@ class _MainState extends State<Main> {
             );
           }
       ),
+    );
+  }
+}
+
+class _Props {
+  final int boardId;
+  final Function dispatch;
+
+  _Props({
+    this.boardId,
+    this.dispatch,
+  });
+
+  static fromStore(Store<AppState> store) {
+    return _Props(
+      boardId: store.state.todo.curBoard,
+      dispatch: (action) => store.dispatch(action),
     );
   }
 }

@@ -79,16 +79,18 @@ class Themer {
   Color _primaryExtraLight = Color(0xFFBBDEFB);
   primaryExtraLight() => _primaryExtraLight;
 
-  static const _defaultLightTextBodyColor = Color(0xFF292929);
-  static const _defaultDarkTextBodyColor = Colors.white70;
-  Color _textBodyColor = _defaultLightTextBodyColor;
+  static const _defLightTextBodyColor = Color(0xFF292929);
+  static const _defDarkTextBodyColor = Colors.white70;
+  Color _textBodyColor = _defLightTextBodyColor;
 
   textBodyColor() => _textBodyColor;
 
   Color _anchorColor = Color(0xFF51A4FF);
   anchorColor() => _anchorColor;
 
-  Color _hintTextColor = Color(0xBB5A5A5A);
+  static const _defLightHintTextColor = Color(0xBB5A5A5A);
+  static const _defDarkHintTextColor = Colors.white60;
+  Color _hintTextColor = _defLightHintTextColor;
   hintTextColor() => _hintTextColor;
 
   Color _lightTextColor = Color(0x825A5A5A);
@@ -106,9 +108,9 @@ class Themer {
   Color _separatorBlue = Color(0x16007AFF);
   separatorBlue() => _separatorBlue;
 
-  Color _lightGreyLight = Color(0x44606060);
-  Color _lightGreyDark = Color(0x44FFFFFF);
-  Color _lightGrey = Color(0x44606060);
+  static const _defLightLightGrey = Color(0x44606060);
+  static const _defDarkLightGrey = Color(0x44FFFFFF);
+  Color _lightGrey = _defLightLightGrey;
   lightGrey() => _lightGrey;
 
   Color _iconGrey = Color(0x44606060);
@@ -123,7 +125,9 @@ class Themer {
   Color _imgPlaceholderColor = Color(0x08606060);
   imgPlaceholderColor() => _imgPlaceholderColor;
 
-  Color _ringColor = Color(0x44606060);
+  static const _defLightRingColor = Color(0x44606060);
+  static const _defDarkRingColor = Color(0x44FFFFFF);
+  Color _ringColor = _defLightRingColor;
   ringColor() => _ringColor;
 
 
@@ -183,8 +187,10 @@ class Themer {
 
     if (brightness == Brightness.dark) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
-      _textBodyColor = _defaultDarkTextBodyColor;
-      _lightGrey = _lightGreyDark;
+      _textBodyColor = _defDarkTextBodyColor;
+      _lightGrey = _defDarkLightGrey;
+      _hintTextColor = _defDarkHintTextColor;
+      _ringColor = _defDarkRingColor;
       return ThemeData(
         brightness: brightness,
         canvasColor: Colors.black,
@@ -207,8 +213,10 @@ class Themer {
       statusBarIconBrightness: Brightness.dark,
       statusBarBrightness: Brightness.light,
     ));
-    _textBodyColor = _defaultLightTextBodyColor;
-    _lightGrey = _lightGreyLight;
+    _textBodyColor = _defLightTextBodyColor;
+    _lightGrey = _defLightLightGrey;
+    _hintTextColor = _defLightHintTextColor;
+    _ringColor = _defLightRingColor;
     return ThemeData(
       brightness: brightness,
       primarySwatch: materialPrimary(),
@@ -262,7 +270,7 @@ class Themer {
 
     _fontBase = _mainFont;
 
-    _textBodyColor = isPtSans ? _defaultLightTextBodyColor : _defaultLightTextBodyColor;
+    _textBodyColor = isPtSans ? _defLightTextBodyColor : _defLightTextBodyColor;
 
     _appBarTitleStyle = isPtSans
         ? TextStyle(color: _primary, fontSize: 28.0, fontFamily: _fontBase, fontWeight: _fontLight, letterSpacing: 3.0)

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:minimalist/models/board.dart';
 import 'package:minimalist/models/todo_item.dart';
 import 'package:minimalist/models/todo_list.dart';
 import 'package:minimalist/render/components/common/clap.dart';
@@ -10,6 +11,7 @@ import 'package:minimalist/render/components/common/reorderable_listy.dart';
 import 'package:minimalist/render/components/dialog/bottom_modal.dart';
 import 'package:minimalist/render/components/dialog/multi_select_dialog.dart';
 import 'package:minimalist/render/home/add_todo_screen.dart';
+import 'package:minimalist/render/home/boards_screen.dart';
 import 'package:minimalist/render/home/more_dialog.dart';
 import 'package:minimalist/render/home/set_list_name_screen.dart';
 import 'package:minimalist/render/home/show_todo_screen.dart';
@@ -24,16 +26,18 @@ import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TodosScreen extends StatelessWidget {
+  final Board board;
   final int todoListId;
 
-  const TodosScreen(this.todoListId, {Key key}) : super(key: key);
+  const TodosScreen(this.board, this.todoListId, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _Props>(
-      converter: (Store<AppState> store) => _Props.fromStore(store, todoListId),
+      converter: (Store<AppState> store) => _Props.fromStore(store, board, todoListId),
       builder: (BuildContext context, _Props props) {
         return _Presenter(
+          board: board,
           todoList: props.todoList,
           dispatch: props.dispatch,
         );
@@ -43,10 +47,11 @@ class TodosScreen extends StatelessWidget {
 }
 
 class _Presenter extends StatefulWidget {
+  final Board board;
   final TodoList todoList;
   final Function dispatch;
 
-  _Presenter({Key key, this.todoList, this.dispatch}) : super(key: key);
+  _Presenter({Key key, this.board, this.todoList, this.dispatch}) : super(key: key);
 
   @override
   _PresenterState createState() => _PresenterState();
@@ -82,7 +87,7 @@ class _PresenterState extends State<_Presenter> {
 
   Widget title() {
     return InkWell(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SetListNameScreen(widget.todoList))),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SetListNameScreen(widget.board, widget.todoList))),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -92,10 +97,11 @@ class _PresenterState extends State<_Presenter> {
               height: 30.0,
               child: Text(widget.todoList.name, style: Themer().listNameTitleStyle()),
             ),
-            Padding(
-              padding: EdgeInsets.only(right: 30.0),
-              child: Clap(widget.todoList.id, mapTodoListColor(widget.todoList.color)),
-            ),
+            if (widget.todoList.showCounter)
+              Padding(
+                padding: EdgeInsets.only(right: 30.0),
+                child: Clap(widget.todoList.completedCount, mapTodoListColor(widget.todoList.color)),
+              ),
           ],
         ));
   }
@@ -120,7 +126,7 @@ class _PresenterState extends State<_Presenter> {
         showModalBottomSheet(
             context: context,
             builder: (context) {
-              return MoreDialog(widget.todoList);
+              return MoreDialog(widget.board, widget.todoList);
             });
       },
       child: Container(
@@ -154,7 +160,7 @@ class _PresenterState extends State<_Presenter> {
               child: Container()),
         ),
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => AddTodoScreen(widget.todoList.id, scrollToTheBottom)));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => AddTodoScreen(widget.board, widget.todoList, scrollToTheBottom)));
         });
   }
 
@@ -173,9 +179,11 @@ class _PresenterState extends State<_Presenter> {
     return Builder(builder: (context) {
       return InkWell(
         onTap: () {
-          showModalBottomSheet(context: context, builder: (context) {
-            return drawer();
-          });
+          showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return settingsMenu();
+              });
         },
         child: Container(
           height: 120.0,
@@ -206,33 +214,51 @@ class _PresenterState extends State<_Presenter> {
         break;
     }
 
-    var children = widget.todoList.todos
-        .map((todo) => Container(key: ValueKey(todo), child: TodoCard(widget.todoList.id, todo, widget.todoList.color, widget.dispatch)));
+    var children = widget.todoList.todos.map((todo) => Container(
+        key: ValueKey(todo),
+        child: TodoCard(
+          widget.board,
+          widget.todoList,
+          todo,
+          widget.dispatch,
+        )));
 
     return ReorderableListyView(
       scrollController: _scrollie,
       children: List<Widget>.from(children),
       columnMainAxisAlignment: columnAlign,
       onReorder: (int oldIndex, int newIndex) {
-        widget.dispatch(ReorderTodo(widget.todoList.id, oldIndex, newIndex));
+        widget.dispatch(UpdateBoard(widget.board.updateList(widget.todoList.reorderTodo(oldIndex, newIndex))));
       },
     );
   }
 
-  Widget drawer() {
+  Widget settingsMenu() {
     var options = [
-      BottomModalOption(MultiSelectDialogOption(title: 'Settings', onTap: () {
-        Navigator.pop(context);
-        Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen()));
-      })),
-      BottomModalOption(MultiSelectDialogOption(title: 'Contact Us', onTap: () {
-        Navigator.pop(context);
-        launch(Utils.buildEmail('', '(insert-your-query-here)'));
-      })),
-      BottomModalOption(MultiSelectDialogOption(title: 'About', onTap: () {
-        Navigator.pop(context);
-        Navigator.push(context, MaterialPageRoute(builder: (_) => AboutScreen()));
-      })),
+      BottomModalOption(MultiSelectDialogOption(
+          title: 'View Collections',
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (_) => BoardsScreen()));
+          })),
+      BottomModalOption(MultiSelectDialogOption(
+          title: 'Settings',
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen()));
+          })),
+      BottomModalOption(MultiSelectDialogOption(
+          title: 'Contact Us',
+          onTap: () {
+            Navigator.pop(context);
+            launch(Utils.buildEmail('', '(insert-your-query-here)'));
+          })),
+      BottomModalOption(MultiSelectDialogOption(
+          title: 'About',
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (_) => AboutScreen()));
+          })),
     ];
 
     return BottomModal(options);
@@ -248,28 +274,28 @@ class _Props {
     this.dispatch,
   });
 
-  static fromStore(Store<AppState> store, int todoListId) {
+  static fromStore(Store<AppState> store, Board board, int todoListId) {
     return _Props(
-      todoList: store.state.todo.lists[todoListId],
+      todoList: store.state.todo.boards[board.id].lists[todoListId],
       dispatch: (action) => store.dispatch(action),
     );
   }
 }
 
 class TodoCard extends StatelessWidget {
-  final int listId;
-  final TodoListColor listColor;
+  final Board board;
+  final TodoList todoList;
   final TodoItem todo;
   final Function dispatch;
 
-  const TodoCard(this.listId, this.todo, this.listColor, this.dispatch, {Key key}) : super(key: key);
+  const TodoCard(this.board, this.todoList, this.todo, this.dispatch, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var textColor = todo.status == TodoStatus.standby ? Themer().textBodyColor() : Themer().hintTextColor();
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => ShowTodoScreen(listId, todo)));
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ShowTodoScreen(board, todoList, todo)));
       },
       child: Row(
         mainAxisSize: MainAxisSize.max,
@@ -287,11 +313,11 @@ class TodoCard extends StatelessWidget {
   }
 
   Widget circle() {
-    Color color = mapTodoListColor(listColor);
+    Color color = mapTodoListColor(todoList.color);
     return InkWell(
       onTap: () {
         var newStatus = todo.status == TodoStatus.standby ? TodoStatus.done : TodoStatus.standby;
-        dispatch(UpdateTodoStatus(listId, todo, newStatus));
+        dispatch(UpdateBoard(board.updateList(todoList.updateTodoStatus(todo, newStatus))));
       },
       child: Container(
         padding: EdgeInsets.only(top: 12.0, bottom: 12.0, left: 40.0, right: 30.0),

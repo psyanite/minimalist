@@ -15,8 +15,8 @@ class AppState {
     if (json == null) return AppState();
     try {
       return AppState(
-        todo: json['todo'] != null ? TodoState.rehydrate(json['todo']) : TodoState.initialState(),
-        settings: json['settings'] != null ? SettingsState.rehydrate(json['settings']) : SettingsState.initialState(),
+        todo: TodoState.rehydrate(json['todo']),
+        settings: SettingsState.rehydrate(json['settings']),
       );
     } catch (e, stack) {
       print('[ERROR] Could not deserialize json from persistor: $e, $stack');
