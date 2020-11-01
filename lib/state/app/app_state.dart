@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:minimalist/services/firestore_service.dart';
 import 'package:minimalist/state/me/todos/todo_state.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
 
@@ -26,10 +27,12 @@ class AppState {
 
   // Used by persistor
   Map<String, dynamic> toJson() {
-    return {
+    Map<String, dynamic> result = {
       'todo': todo.toPersist(),
       'settings': settings.toPersist(),
     };
+    FirestoreService().saveState(result);
+    return result;
   }
 
   AppState copyWith({TodoState todo, SettingsState settings}) {

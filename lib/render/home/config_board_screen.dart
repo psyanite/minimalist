@@ -75,7 +75,7 @@ class _PresenterState extends State<_Presenter> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.boardSize > 0) deleteButton(),
+            deleteButton(),
             button(),
           ],
         ),
@@ -123,8 +123,8 @@ class _PresenterState extends State<_Presenter> {
       context: context,
       builder: (BuildContext context) {
         return Confirm(
-          title: 'Delete Board',
-          description: 'This board will be lost forever.',
+          title: 'Delete Collection',
+          description: 'This collection will be lost forever.',
           action: 'Delete',
           onTap: () {
             widget.dispatch(DeleteBoard(widget.board));

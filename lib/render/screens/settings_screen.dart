@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:minimalist/render/components/common/components.dart';
 import 'package:minimalist/render/presentation/themer.dart';
+import 'package:minimalist/render/screens/about_screen.dart';
+import 'package:minimalist/render/screens/account_screen.dart';
+import 'package:minimalist/render/screens/login_screen.dart';
+import 'package:minimalist/services/auth_service.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:minimalist/state/settings/settings_actions.dart';
 import 'package:minimalist/state/settings/settings_state.dart';
@@ -58,11 +62,59 @@ class _Presenter extends StatefulWidget {
 class _PresenterState extends State<_Presenter> {
   @override
   Widget build(BuildContext context) {
-    var slivers = <Widget>[
-      HeaderSliver(title: 'SETTINGS'),
-      controls(),
+    return Scaffold(body: Builder(builder: (BuildContext context) {
+      return CustomScrollView(slivers: [
+        HeaderSliver(title: 'SETTINGS'),
+        if (AuthService().getUser() == null) backupButton(context),
+        controls(),
+        moreSettings(context),
+      ], physics: BouncingScrollPhysics());
+    }));
+  }
+
+  Widget backupButton(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: EdgeInsets.only(left: 50.0, right: 50.0, top: 20.0, bottom: 10.0),
+        child: BottomButton(text: 'Backup Data', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()))),
+      ),
+    );
+  }
+
+  Widget moreSettings(BuildContext context) {
+    var items = [
+      AuthService().getUser() != null
+          ? page('Account', () => Navigator.push(context, MaterialPageRoute(builder: (_) => AccountScreen())))
+          : page('Login', () => Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()))),
+      page('About Us', () => Navigator.push(context, MaterialPageRoute(builder: (_) => AboutScreen()))),
     ];
-    return Scaffold(body: CustomScrollView(slivers: slivers, physics: BouncingScrollPhysics()));
+
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: EdgeInsets.only(left: 50.0, right: 50.0, top: 20.0, bottom: 100.0),
+        child: ListView.separated(
+          padding: EdgeInsets.all(0),
+          physics: BouncingScrollPhysics(),
+          shrinkWrap: true,
+          itemBuilder: (context, index) => items[index],
+          separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separator()),
+          itemCount: items.length,
+        ),
+      ),
+    );
+  }
+
+  Widget page(String title, Function onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 20.0),
+        child: Text(
+          title,
+          style: TextStyle(fontSize: 22.0, fontWeight: Themer().fontBold()),
+        ),
+      ),
+    );
   }
 
   Widget controls() {
@@ -78,10 +130,11 @@ class _PresenterState extends State<_Presenter> {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 50.0),
         child: ListView.separated(
+          padding: EdgeInsets.only(top: 30.0),
           physics: BouncingScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) => controlOptions[index],
-          separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separatorBlue()),
+          separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separator()),
           itemCount: controlOptions.length,
         ),
       ),
@@ -251,7 +304,7 @@ class _SettingControl extends StatelessWidget {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemBuilder: (context, index) => _option(context, options[index]),
-                  separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separatorBlue()),
+                  separatorBuilder: (context, index) => Divider(height: 1.0, color: Themer().separator()),
                   itemCount: options.length,
                 ),
               ),

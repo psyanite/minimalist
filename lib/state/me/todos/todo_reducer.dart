@@ -9,15 +9,6 @@ Reducer<TodoState> todoReducer = combineReducers([
   new TypedReducer<TodoState, UpdateBoard>(updateBoard),
   new TypedReducer<TodoState, DeleteBoard>(deleteBoard),
   new TypedReducer<TodoState, ReorderBoard>(reorderBoard),
-  // new TypedReducer<TodoState, CreateNewTodoList>(createNewTodoList),
-  // new TypedReducer<TodoState, UpdateTodoList>(updateTodoList),
-  // new TypedReducer<TodoState, DeleteTodoList>(deleteTodoList),
-  // new TypedReducer<TodoState, ReorderList>(reorderList),
-  // new TypedReducer<TodoState, AddTodo>(addTodo),
-  // new TypedReducer<TodoState, DeleteTodo>(deleteTodo),
-  // new TypedReducer<TodoState, ReorderTodo>(reorderTodo),
-  // new TypedReducer<TodoState, UpdateTodo>(updateTodo),
-  // new TypedReducer<TodoState, UpdateTodoStatus>(updateTodoStatus),
 ]);
 
 TodoState setCurBoard(TodoState state, SetCurBoard action) {
@@ -39,48 +30,3 @@ TodoState deleteBoard(TodoState state, DeleteBoard action) {
 TodoState reorderBoard(TodoState state, ReorderBoard action) {
   return state.reorderBoard(action.oldIndex, action.newIndex);
 }
-
-// TodoState createNewTodoList(TodoState state, CreateNewTodoList action) {
-//   var board = action.board.createNewTodoList(action.afterId);
-//   return state.updateBoard(board);
-// }
-//
-// TodoState updateTodoList(TodoState state, UpdateTodoList action) {
-//   var board = action.board.updateList(action.list);
-//   return state.updateBoard(board);
-// }
-//
-// TodoState deleteTodoList(TodoState state, DeleteTodoList action) {
-//   var board = action.board.deleteList(action.list);
-//   return state.updateBoard(board);
-// }
-//
-// TodoState reorderList(TodoState state, ReorderList action) {
-//   var board = action.board.reorderList(action.curIndex, action.newIndex);
-//   return state.updateBoard(board);
-// }
-//
-// TodoState addTodo(TodoState state, AddTodo action) {
-//   var board = action.board.addTodo(action.listId, action.todo);
-//   return state.updateBoard(board);
-// }
-//
-// TodoState deleteTodo(TodoState state, DeleteTodo action) {
-//   var board = action.board.deleteTodo(action.listId, action.todo);
-//   return state.updateBoard(board);
-// }
-//
-// TodoState reorderTodo(TodoState state, ReorderTodo action) {
-//   var board = action.board.reorderTodo(action.listId, action.oldIndex, action.newIndex);
-//   return state.updateBoard(board);
-// }
-//
-// TodoState updateTodo(TodoState state, UpdateTodo action) {
-//   var board = action.board.updateTodo(action.listId, action.original, action.todo);
-//   return state.updateBoard(board);
-// }
-//
-// TodoState updateTodoStatus(TodoState state, UpdateTodoStatus action) {
-//   var board = action.board.updateTodoStatus(action.listId, action.todo, action.newStatus);
-//   return state.updateBoard(board);
-// }

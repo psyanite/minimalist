@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:minimalist/render/components/dialog/dialog.dart';
 import 'package:minimalist/render/presentation/themer.dart';
 
-class Confirm extends StatelessWidget {
+class Confirm extends StatefulWidget {
   final String title;
   final String description;
   final String action;
@@ -12,14 +12,21 @@ class Confirm extends StatelessWidget {
   Confirm({Key key, this.title, this.description, this.action, this.onTap}) : super(key: key);
 
   @override
+  _PresenterState createState() => _PresenterState();
+}
+
+class _PresenterState extends State<Confirm> {
+  bool isLoading = false;
+
+  @override
   Widget build(BuildContext context) {
     var content = Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Container(height: 10.0),
         Column(children: <Widget>[
-          Text(title, style: TextStyle(fontSize: 18.0, fontWeight: Themer().fontBold())),
-          if (description != null) _description(),
+          Text(widget.title, style: TextStyle(fontSize: 18.0, fontWeight: Themer().fontBold())),
+          if (widget.description != null) _description(),
         ]),
         Container(height: 10.0),
         _options(context),
@@ -38,19 +45,32 @@ class Confirm extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(top: 5.0),
       width: 200.0,
-      child: Text(description, textAlign: TextAlign.center, style: TextStyle(color: Themer().hintTextColor(), fontSize: 14.0)),
+      child: Text(widget.description, textAlign: TextAlign.center, style: TextStyle(color: Themer().hintTextColor(), fontSize: 14.0)),
     );
   }
 
   Widget _options(context) {
-    var options = <DialogOption>[
-      DialogOption(display: action, onTap: onTap, style: TextStyle(color: Themer().anchorColor(), fontSize: 16.0, fontWeight: Themer().fontBold())),
-      DialogOption(display: 'Cancel', onTap: () => Navigator.of(context, rootNavigator: true).pop(true), style: TextStyle(fontSize: 16.0)),
+    var options = <Widget>[
+      isLoading
+          ? Container(
+              height: 40.0,
+              padding: EdgeInsets.only(top: 12.0, bottom: 13.0),
+              child: Container(
+                width: 15.0,
+                height: 15.0,
+                child: CircularProgressIndicator(strokeWidth: 3.0, valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue)),
+              ),
+            )
+          : _option(DialogOption(
+              display: widget.action,
+              onTap: doMagic,
+              style: TextStyle(color: Themer().anchorColor(), fontSize: 16.0, fontWeight: Themer().fontBold()))),
+      _option(DialogOption(display: 'Cancel', onTap: () => Navigator.of(context, rootNavigator: true).pop(true), style: TextStyle(fontSize: 16.0))),
     ];
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: List<Widget>.from(options.map((o) {
-        return Column(children: <Widget>[Divider(color: Color(0x16007AFF)), _option(o)]);
+        return Column(children: <Widget>[Divider(color: Color(0x16007AFF)), o]);
       })),
     );
   }
@@ -68,5 +88,15 @@ class Confirm extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  doMagic() async {
+    setState(() {
+      isLoading = true;
+    });
+    await widget.onTap();
+    setState(() {
+      isLoading = false;
+    });
   }
 }

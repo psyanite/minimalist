@@ -102,10 +102,10 @@ class Themer {
   Color _paper = Color(0xFFFAFAFA);
   paper() => _paper;
 
-  Color _separator = Color(0xFFEEEEEE);
+  Color _separator = Color(0x44606060);
   separator() => _separator;
 
-  Color _separatorBlue = Color(0x16007AFF);
+  Color _separatorBlue = Color(0x14007AFF);
   separatorBlue() => _separatorBlue;
 
   static const _defLightLightGrey = Color(0x44606060);
@@ -169,16 +169,16 @@ class Themer {
   static const _burntGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    stops: [0, 0.5, 1.0],
-    colors: [Color(0xFFFFC86B), Color(0xFFFFAB40), Color(0xFFC45D35)],
+    stops: [0, 0.15, 1.0],
+    colors: [Color(0xFF1ED1FC), Color(0xFF1ED1FC), Color(0xFF130CB7)],
   );
   burntGradient() => _burntGradient;
 
   static const _buttonGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    stops: [0, 0.3],
-    colors: [Color(0xFFFFC86B), Color(0xFFFFB655)],
+    stops: [0, 0.6],
+    colors: [Color(0xFF23C8F2), Colors.blue],
   );
   buttonGradient() => _buttonGradient;
 

@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -15,6 +16,7 @@ import 'render/components/common/main_navigator.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   final persistor = Persistor<AppState>(
     storage: FlutterStorage(key: 'minimalist'),
@@ -26,7 +28,7 @@ main() async {
     initialState = await persistor.load();
   } catch (e, stack) {
     print('[ERROR] $e, $stack');
-    initialState = null;
+    initialState = AppState();
   }
 
   List<Middleware<AppState>> createMiddleware() {
@@ -39,7 +41,7 @@ main() async {
 
   final store = Store<AppState>(
     appReducer,
-    initialState: initialState ?? AppState(),
+    initialState: initialState,
     middleware: createMiddleware(),
   );
 

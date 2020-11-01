@@ -140,18 +140,18 @@ class WhiteButton extends StatelessWidget {
 
 class BottomButton extends StatelessWidget {
   final String text;
-  final Function onPressed;
+  final Function onTap;
 
   BottomButton({
     Key key,
     this.text,
-    this.onPressed,
+    this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onPressed,
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 20.0),
         decoration: BoxDecoration(
@@ -163,7 +163,7 @@ class BottomButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(text, style: TextStyle(fontSize: 20.0, color: Colors.white, letterSpacing: 3.0)),
+            Text(text, style: TextStyle(fontSize: 20.0, color: Colors.white)),
           ],
         ),
       ),
@@ -276,7 +276,7 @@ class HollowButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: borderColor ?? Color(0xFFFFD173), width: 1.0, style: BorderStyle.solid),
+          border: Border.all(color: borderColor ?? Colors.blue, width: 1.0, style: BorderStyle.solid),
           borderRadius: BorderRadius.circular(2.0),
         ),
         padding: padding ?? EdgeInsets.symmetric(vertical: 10.0),
@@ -531,18 +531,18 @@ buttonSnack(BuildContext context, String text, String buttonText, Function onTap
   final snackBar = SnackBar(
     elevation: 0.0,
     backgroundColor: Color(0xFF51A4FF),
-    behavior: SnackBarBehavior.floating,
     content: Container(
+      height: 70.0,
       child: Row(
         children: <Widget>[
-          Expanded(child: Text(text, style: TextStyle(color: Color(0xEEFFFFFF), fontSize: 16.0))),
+          Expanded(child: Text(text, style: TextStyle(color: Color(0xEEFFFFFF), fontSize: 18.0))),
           InkWell(
             onTap: onTap,
             child: Container(
               padding: EdgeInsets.only(left: 8.0, top: 2.0, bottom: 2.0),
               child: Text(
                 buttonText,
-                style: TextStyle(color: Colors.white, fontSize: 17.0, fontWeight: Themer().fontBold()),
+                style: TextStyle(color: Colors.white, fontSize: 22.0, fontWeight: Themer().fontBold()),
               ),
             ),
           )
@@ -554,6 +554,13 @@ buttonSnack(BuildContext context, String text, String buttonText, Function onTap
 }
 
 snack(BuildContext context, String text) {
+  buttonSnack(context, text, 'OK', () {
+    Scaffold.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.dismiss);
+  });
+}
+
+snackError(BuildContext context) {
+  var text = 'Oops! Something went wrong, please try again';
   buttonSnack(context, text, 'OK', () {
     Scaffold.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.dismiss);
   });

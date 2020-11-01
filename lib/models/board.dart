@@ -3,14 +3,15 @@ import 'dart:collection';
 import 'package:minimalist/models/todo_item.dart';
 import 'package:minimalist/models/todo_list.dart';
 
-final TodoList batmanList = TodoList(id: 0, name: 'todo', todos: [
-  TodoItem(title: 'shop for a new cape', createdAt: DateTime.now()),
-  TodoItem(title: 'get pedicure', createdAt: DateTime.now()),
-  TodoItem(title: 'service the batmobile', createdAt: DateTime.now()),
-  TodoItem(title: 'call robin', createdAt: DateTime.now()),
-  TodoItem(title: 'make reservation', createdAt: DateTime.now()),
-  TodoItem(title: 'buy flowers', createdAt: DateTime.now()),
-]);
+final TodoList batmanList =
+  TodoList(id: 0, name: 'todo', todos: [
+    TodoItem(title: 'shop for a new cape', createdAt: DateTime.now()),
+    TodoItem(title: 'get pedicure', createdAt: DateTime.now()),
+    TodoItem(title: 'service the batmobile', createdAt: DateTime.now()),
+    TodoItem(title: 'call robin', createdAt: DateTime.now()),
+    TodoItem(title: 'make reservation', createdAt: DateTime.now()),
+    TodoItem(title: 'buy flowers', createdAt: DateTime.now()),
+  ]);
 
 class Board {
   final int id;

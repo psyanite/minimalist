@@ -16,7 +16,6 @@ import 'package:minimalist/render/home/more_dialog.dart';
 import 'package:minimalist/render/home/set_list_name_screen.dart';
 import 'package:minimalist/render/home/show_todo_screen.dart';
 import 'package:minimalist/render/presentation/themer.dart';
-import 'package:minimalist/render/screens/about_screen.dart';
 import 'package:minimalist/render/screens/settings_screen.dart';
 import 'package:minimalist/state/app/app_state.dart';
 import 'package:minimalist/state/me/todos/todo_actions.dart';
@@ -252,12 +251,6 @@ class _PresenterState extends State<_Presenter> {
           onTap: () {
             Navigator.pop(context);
             launch(Utils.buildEmail('', '(insert-your-query-here)'));
-          })),
-      BottomModalOption(MultiSelectDialogOption(
-          title: 'About',
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (_) => AboutScreen()));
           })),
     ];
 

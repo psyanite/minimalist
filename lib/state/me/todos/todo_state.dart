@@ -59,7 +59,8 @@ class TodoState {
     var clone = cloneBoards();
     clone.remove(board.id);
     if (clone.length == 0) {
-      return TodoState.initialState();
+      var board = Board.initialState().copyWith(lists: LinkedHashMap.from({0: TodoList(id: 0)}));
+      return TodoState.initialState().copyWith(boards: LinkedHashMap.from({0: board}));
     } else {
       return copyWith(boards: clone);
     }
