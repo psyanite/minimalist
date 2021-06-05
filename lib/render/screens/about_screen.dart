@@ -1,9 +1,5 @@
-import 'dart:io';
-
-import 'package:device_info/device_info.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:minimalist/render/components/common/banners.dart';
 import 'package:minimalist/render/components/common/components.dart';
 import 'package:minimalist/render/presentation/themer.dart';
@@ -62,37 +58,7 @@ class AboutScreen extends StatelessWidget {
   }
 
   _reportAnIssue() async {
-    var info;
-    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    try {
-      if (Platform.isAndroid) {
-        var data = await deviceInfo.androidInfo;
-        info = """
-          platform: android
-          type: ${data.isPhysicalDevice ? 'physical' : 'non-physical'}
-          brand: ${data.brand}
-          manufacturer: ${data.manufacturer}
-          hardware: ${data.hardware}
-          model: ${data.model}
-          device: ${data.device}
-          version: ${data.version.baseOS}-${data.version.release}-${data.version.sdkInt}-${data.version.securityPatch}
-        """;
-      } else if (Platform.isIOS) {
-        var data = await deviceInfo.iosInfo;
-        info = """
-          platform: android
-          type: ${data.isPhysicalDevice ? 'physical' : 'non-physical'}
-          name: ${data.name}
-          systemName: ${data.systemName}
-          systemVersion: ${data.systemVersion}
-          model: ${data.model}
-        """;
-      } else {
-        info = 'error-could-not-determine-platform';
-      }
-    } on PlatformException {
-      info = 'platform-exception-could-not-get-device-info';
-    }
-    launch(Utils.buildEmail('Issue Report', '(describe-your-issue-here)<br><br><br>Diagnostics<br><br>$info'));
+    var deviceInfo = await Utils.getDeviceInfo();
+    launch(Utils.buildEmail('Issue Report', '(describe-your-issue-here)\n\n\nDiagnostics\n\n$deviceInfo\n\n'));
   }
 }

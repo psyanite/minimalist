@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:minimalist/render/components/common/components.dart';
 import 'package:minimalist/render/presentation/themer.dart';
+import 'package:minimalist/render/screens/login_success_screen.dart';
 import 'package:minimalist/render/screens/privacy_screen.dart';
 import 'package:minimalist/render/screens/resolve_conflict_screen.dart';
+import 'package:minimalist/render/screens/settings_screen.dart';
 import 'package:minimalist/render/screens/terms_screen.dart';
 import 'package:minimalist/services/auth_service.dart';
 import 'package:minimalist/services/firestore_service.dart';
@@ -152,6 +154,9 @@ class _PresenterState extends State<_Presenter> {
       } else {
         FirestoreService().saveState(widget.appstate.toJson());
         Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (_) => LoginSuccessScreen()));
       }
     }
   }

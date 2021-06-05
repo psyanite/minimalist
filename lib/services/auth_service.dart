@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'coffee_cat.dart';
+
 class AuthService {
   static final AuthService _singleton = AuthService._internal();
 
@@ -24,8 +26,9 @@ class AuthService {
       UserCredential userCredential = await _auth.signInWithCredential(credential);
       User user = userCredential.user;
       return user;
-    } catch (error) {
-      print('[ERROR] $error');
+    } catch (error, stacktrace) {
+      CoffeeCat.sendFile("alerts", CoffeeCatMsgType.Error, "Failed to sign in", error, stacktrace);
+      print('[ERROR] $error, ${stacktrace.toString()}');
       return null;
     }
   }

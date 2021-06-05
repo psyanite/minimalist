@@ -248,9 +248,10 @@ class _PresenterState extends State<_Presenter> {
           })),
       BottomModalOption(MultiSelectDialogOption(
           title: 'Contact Us',
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context);
-            launch(Utils.buildEmail('', '(insert-your-query-here)'));
+            var deviceInfo = await Utils.getDeviceInfo();
+            launch(Utils.buildEmail('', '(insert-your-query-here)\n\n\nDiagnostics:\n\n$deviceInfo\n\n'));
           })),
     ];
 
