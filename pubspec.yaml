@@ -3,7 +3,7 @@ description: The minimalest minimal list
 
 publish_to: 'none'
 
-version: 3.0.0+3
+version: 3.1.0+4
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
